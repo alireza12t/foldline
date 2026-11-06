@@ -1,0 +1,66 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- GitHub social preview, 1280x640. Render from the repo folder:
+     node core/render/still.mjs tools/social-preview 0 --size 1280x640 --out /tmp/sp
+     ffmpeg -i /tmp/sp/t_0.jpg docs/foldline/social-preview.png
+     Numbers come from the README's Results section (Unfold EP9, 8.4 min, 1920x1080, 60 fps). -->
+<link rel="stylesheet" href="/core/fonts/fonts.css">
+<style>html,body{margin:0;background:#10141c}canvas{display:block}</style>
+</head><body><canvas id="c" width="1280" height="640"></canvas>
+<script>
+const c = document.getElementById('c'), x = c.getContext('2d'), W = 1280, H = 640;
+const INK = '#10141c', PAPER = '#f3efe6', CORAL = '#ff6a3d', TEAL = '#2ec4a6', GOLD = '#ffd166', MUTED = 'rgba(243,239,230,.62)';
+function rr(X, Y, w, h, r) { x.beginPath(); x.roundRect(X, Y, w, h, r); }
+function text(s, X, Y, size, color, font = 'Lilita One', align = 'left') { x.font = `${size}px "${font}"`; x.fillStyle = color; x.textAlign = align; x.textBaseline = 'alphabetic'; x.fillText(s, X, Y); return x.measureText(s).width; }
+window.DUR = 1;
+window.render = () => {
+  // background: ink, soft teal glow on the right, faint grid
+  x.fillStyle = INK; x.fillRect(0, 0, W, H);
+  const g = x.createRadialGradient(990, 300, 40, 990, 300, 600); g.addColorStop(0, 'rgba(46,196,166,.26)'); g.addColorStop(1, 'rgba(46,196,166,0)');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.strokeStyle = 'rgba(243,239,230,.05)'; x.lineWidth = 1;
+  for (let i = 0; i <= W; i += 40) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, H); x.stroke(); }
+  for (let j = 0; j <= H; j += 40) { x.beginPath(); x.moveTo(0, j); x.lineTo(W, j); x.stroke(); }
+
+  // name and what it does
+  x.save(); x.shadowColor = 'rgba(0,0,0,.5)'; x.shadowBlur = 24; x.shadowOffsetY = 6;
+  text('FOLDLINE', 72, 160, 128, GOLD);
+  x.restore();
+  text('HTML canvas to MP4,', 76, 232, 50, PAPER, 'Fredoka');
+  text('fast, on a Mac', 76, 290, 50, PAPER, 'Fredoka');
+
+  // race bars: the 8.4 min Unfold video
+  const bx = 76, by = 372, bw = 470;
+  rr(bx - 24, by - 44, bw + 200, 228, 26); x.fillStyle = 'rgba(243,239,230,.07)'; x.fill();
+  text('8.4 MIN VIDEO, 1080P 60 FPS', bx, by - 8, 24, MUTED, 'Fredoka');
+  text('SCREENSHOTS', bx, by + 30, 26, CORAL, 'Fredoka');
+  rr(bx, by + 40, bw, 38, 12); x.fillStyle = CORAL; x.fill();
+  text('426 s', bx + bw + 18, by + 72, 36, PAPER);
+  text('FOLDLINE', bx, by + 116, 26, TEAL, 'Fredoka');
+  const fwid = bw * 161 / 426;
+  rr(bx, by + 126, fwid, 38, 12); x.fillStyle = TEAL; x.fill();
+  text('161 s', bx + fwid + 18, by + 158, 36, PAPER);
+
+  // right: folded film frame with a play triangle
+  x.save(); x.translate(1000, 250); x.rotate(-.06);
+  const fw = 340, fh = 220, n = 4;
+  for (let i = 0; i < n; i++) {
+    const X = -fw / 2 + i * fw / n, sk = i % 2 ? .07 : -.07;
+    x.save(); x.transform(1, sk, 0, 1, 0, 0);
+    rr(X, -fh / 2, fw / n + 1, fh, i === 0 || i === n - 1 ? 18 : 2); x.fillStyle = PAPER; x.fill();
+    if (i % 2) { x.fillStyle = 'rgba(16,20,28,.10)'; x.fill(); }
+    x.restore();
+  }
+  x.beginPath(); x.moveTo(-32, -50); x.lineTo(-32, 50); x.lineTo(54, 0); x.closePath(); x.fillStyle = CORAL; x.fill();
+  x.restore();
+
+  // chip: in-page WebCodecs on the hardware encoder
+  x.save(); x.translate(1000, 470); rr(-160, -40, 320, 80, 18); x.fillStyle = '#1b2230'; x.fill(); x.strokeStyle = TEAL; x.lineWidth = 4; x.stroke();
+  for (let i = -5; i <= 5; i++) { x.fillStyle = TEAL; x.fillRect(i * 28 - 4, -54, 8, 14); x.fillRect(i * 28 - 4, 40, 8, 14); }
+  text('GPU ENCODER', 0, 14, 38, PAPER, 'Lilita One', 'center'); x.restore();
+
+  // footer line
+  text('WebCodecs H.264  ·  open source, MIT  ·  66 film styles from lemo-opuscar by LemoLab', W / 2, 604, 24, MUTED, 'Fredoka', 'center');
+};
+Promise.all([document.fonts.load('100px "Lilita One"'), document.fonts.load('40px Fredoka')]).then(() => { window.render(0); window.READY = true; });
+</script></body></html>
