@@ -1,0 +1,60 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- YouTube thumbnail for the explainer, 1280x720. Render: node core/render/still.mjs examples/foldline-explainer/thumb 0 --size 1280x720 --out <dir> -->
+<link rel="stylesheet" href="/core/fonts/fonts.css">
+<style>html,body{margin:0;background:#10141c}canvas{display:block}</style>
+</head><body><canvas id="c" width="1280" height="720"></canvas>
+<script>
+const c = document.getElementById('c'), x = c.getContext('2d'), W = 1280, H = 720;
+const INK = '#10141c', PAPER = '#f3efe6', CORAL = '#ff6a3d', TEAL = '#2ec4a6', GOLD = '#ffd166';
+function rr(X, Y, w, h, r) { x.beginPath(); x.roundRect(X, Y, w, h, r); }
+function text(s, X, Y, size, color, font = 'Lilita One', align = 'left') { x.font = `${size}px "${font}"`; x.fillStyle = color; x.textAlign = align; x.textBaseline = 'alphabetic'; x.fillText(s, X, Y); }
+window.DUR = 1;
+window.render = () => {
+  // background: ink with a soft teal glow and a faint grid
+  x.fillStyle = INK; x.fillRect(0, 0, W, H);
+  const g = x.createRadialGradient(900, 360, 40, 900, 360, 620); g.addColorStop(0, 'rgba(46,196,166,.28)'); g.addColorStop(1, 'rgba(46,196,166,0)');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.strokeStyle = 'rgba(243,239,230,.05)'; x.lineWidth = 1;
+  for (let i = 0; i <= W; i += 40) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, H); x.stroke(); }
+  for (let j = 0; j <= H; j += 40) { x.beginPath(); x.moveTo(0, j); x.lineTo(W, j); x.stroke(); }
+
+  // big claim, top left
+  x.save(); x.shadowColor = 'rgba(0,0,0,.5)'; x.shadowBlur = 24; x.shadowOffsetY = 6;
+  text('2.6x', 64, 250, 230, GOLD);
+  text('FASTER', 70, 360, 118, PAPER);
+  x.restore();
+
+  // race bars: before vs Foldline
+  const bx = 70, by = 430, bw = 450;
+  rr(bx - 24, by - 46, bw + 210, 250, 28); x.fillStyle = 'rgba(243,239,230,.07)'; x.fill();
+  text('BEFORE', bx, by, 34, CORAL, 'Fredoka');
+  rr(bx, by + 14, bw, 50, 14); x.fillStyle = CORAL; x.fill();
+  text('7.1 min', bx + bw + 20, by + 54, 40, PAPER);
+  text('FOLDLINE', bx, by + 120, 34, TEAL, 'Fredoka');
+  rr(bx, by + 134, bw * 161 / 426, 50, 14); x.fillStyle = TEAL; x.fill();
+  text('2.7 min', bx + bw * 161 / 426 + 20, by + 174, 40, PAPER);
+
+  // right: a folded "film frame" card with a play triangle, folds shaded
+  x.save(); x.translate(1000, 320); x.rotate(-.06);
+  const fw = 360, fh = 230, n = 4;
+  for (let i = 0; i < n; i++) {
+    const X = -fw / 2 + i * fw / n, sk = i % 2 ? .07 : -.07;
+    x.save(); x.transform(1, sk, 0, 1, 0, 0);
+    rr(X, -fh / 2, fw / n + 1, fh, i === 0 ? 18 : i === n - 1 ? 18 : 2); x.fillStyle = PAPER; x.fill();
+    x.fillStyle = i % 2 ? 'rgba(16,20,28,.10)' : 'rgba(255,255,255,0)'; x.fill();
+    x.restore();
+  }
+  x.beginPath(); x.moveTo(-34, -52); x.lineTo(-34, 52); x.lineTo(56, 0); x.closePath(); x.fillStyle = CORAL; x.fill();
+  x.restore();
+  // chip under the card
+  x.save(); x.translate(1000, 560); rr(-150, -40, 300, 80, 18); x.fillStyle = '#1b2230'; x.fill(); x.strokeStyle = TEAL; x.lineWidth = 4; x.stroke();
+  for (let i = -5; i <= 5; i++) { x.fillStyle = TEAL; x.fillRect(i * 26 - 4, -54, 8, 14); x.fillRect(i * 26 - 4, 40, 8, 14); }
+  text('GPU ENCODER', 0, 14, 38, PAPER, 'Lilita One', 'center'); x.restore();
+
+  // brand + open source tag
+  text('FOLDLINE', 1210, 82, 52, PAPER, 'Lilita One', 'right');
+  rr(1010, 100, 200, 44, 22); x.fillStyle = TEAL; x.fill(); text('OPEN SOURCE', 1110, 131, 26, INK, 'Fredoka', 'center');
+};
+Promise.all([document.fonts.load('100px "Lilita One"'), document.fonts.load('40px Fredoka')]).then(() => { window.render(0); window.READY = true; });
+</script></body></html>

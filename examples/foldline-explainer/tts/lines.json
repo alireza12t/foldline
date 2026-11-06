@@ -1,0 +1,110 @@
+[
+ {
+  "id": "l01",
+  "voice": [
+   "ryan"
+  ],
+  "text": "This is Foldline. It turns code into finished video, fast, right on your Mac.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "This is Foldline. It turns code into finished video, fast, right on your Mac."
+ },
+ {
+  "id": "l02",
+  "voice": [
+   "ryan"
+  ],
+  "text": "Every frame you see here is drawn by code in a browser canvas. No video generation. No stock footage.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "Every frame you see here is drawn by code in a browser canvas. No video generation. No stock footage."
+ },
+ {
+  "id": "l03",
+  "voice": [
+   "ryan"
+  ],
+  "text": "The usual way to save those frames is slow. Each one is screenshotted, squeezed into a JPEG, piped out, decoded again, and encoded by software.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "The usual way to save those frames is slow. Each one is screenshotted, squeezed into a JPEG, piped out, decoded again, and encoded by software."
+ },
+ {
+  "id": "l04",
+  "voice": [
+   "ryan"
+  ],
+  "text": "We timed it. Drawing a frame takes about four milliseconds. Moving it around took most of the time.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "We timed it. Drawing a frame takes about four milliseconds. Moving it around took most of the time."
+ },
+ {
+  "id": "l05",
+  "voice": [
+   "ryan"
+  ],
+  "text": "Foldline skips all of that. The page hands every frame straight to the Mac's hardware video encoder, and it never leaves the graphics chip.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "Foldline skips all of that. The page hands every frame straight to the Mac's hardware video encoder, and it never leaves the graphics chip."
+ },
+ {
+  "id": "l06",
+  "voice": [
+   "ryan"
+  ],
+  "text": "An eighty-three second Short used to take sixty seconds to build. Now it takes about thirty.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "An eighty-three second Short used to take sixty seconds to build. Now it takes about thirty."
+ },
+ {
+  "id": "l07",
+  "voice": [
+   "ryan"
+  ],
+  "text": "A full eight-minute film went from seven minutes to under three, using eighty-six percent less CPU.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "A full eight-minute film went from seven minutes to under three, using eighty-six percent less CPU."
+ },
+ {
+  "id": "l08",
+  "voice": [
+   "ryan"
+  ],
+  "text": "And the picture stays the same. Put the frames side by side, and you can't tell them apart.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "And the picture stays the same. Put the frames side by side, and you can't tell them apart."
+ },
+ {
+  "id": "l09",
+  "voice": [
+   "ryan"
+  ],
+  "text": "It checks its own work, too. If a page can't use the fast path, it falls back on its own. And it won't hand you a video with missing sound.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "It checks its own work, too. If a page can't use the fast path, it falls back on its own. And it won't hand you a video with missing sound."
+ },
+ {
+  "id": "l10",
+  "voice": [
+   "ryan"
+  ],
+  "text": "It comes with the full lemo-opuscar library by LemoLab. Sixty-six film styles, from watercolor to pixel art, each with its own demo.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "It comes with the full lemo-opuscar library by LemoLab. Sixty-six film styles, from watercolor to pixel art, each with its own demo."
+ },
+ {
+  "id": "l11",
+  "voice": [
+   "ryan"
+  ],
+  "text": "To start, clone the repo, install, and render. It's one command.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "To start, clone the repo, install, and render. It's one command."
+ },
+ {
+  "id": "l12",
+  "voice": [
+   "ryan"
+  ],
+  "text": "Foldline is free and open source. It was made for the Unfold channel on YouTube. Come build something.",
+  "instruct": "A clear, friendly tech explainer narrator, confident and warm, steady unhurried pace, a little smile in the voice",
+  "display": "Foldline is free and open source. It was made for the Unfold channel on YouTube. Come build something."
+ }
+]
