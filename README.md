@@ -48,15 +48,16 @@ Everything else in the library works the way lemo describes it.
 
 Foldline is a renderer plus a style library, not a framework or a timeline editor. You write the page, Foldline renders it.
 
-| | Foldline | lemo-opuscar (original) | [Remotion](https://github.com/remotion-dev/remotion) | [Motion Canvas](https://github.com/motion-canvas/motion-canvas) | [HyperFrames](https://github.com/heygen-com/hyperframes) |
+| | **Foldline** | lemo-opuscar (original) | [Remotion](https://github.com/remotion-dev/remotion) | [Motion Canvas](https://github.com/motion-canvas/motion-canvas) | [HyperFrames](https://github.com/heygen-com/hyperframes) |
 |---|---|---|---|---|---|
-| You write | an HTML page with `render(t)` | an HTML page with `render(t)` | React components | TypeScript scenes | HTML |
-| Frames reach the encoder | from the canvas, inside the page (WebCodecs) | as screenshots | | | |
-| Default encoder | WebCodecs hardware H.264, then VideoToolbox, then x264 | x264 | | | |
-| Code licence | MIT | MIT | Remotion License (free for individuals, non-profits and companies of up to 3 employees; a paid company licence above that) | MIT | Apache-2.0 |
-| Ready-made styles | 66 (lemo's) | 66 | | | |
+| **You write** | an HTML page with `render(t)` | an HTML page with `render(t)` | React components | TypeScript scenes | HTML, CSS and seekable animations (GSAP, Lottie, three.js and others) |
+| **How frames are made** | Chrome draws the canvas, and the page hands each frame to the encoder (WebCodecs). Frames stay on the GPU. | Chrome draws the page, and each frame is taken as a JPEG screenshot | Chrome draws each frame, and FFmpeg encodes them | the browser saves each frame as an image file (PNG, JPEG or WebP) | headless Chrome (Puppeteer) seeks each frame, and FFmpeg encodes them |
+| **Video encoder by default** | Mac hardware H.264, falling back to VideoToolbox, then x264 | x264 (software) | FFmpeg, H.264. Hardware encoding (VideoToolbox on Mac, NVENC) is available but off by default. | none built in: you turn the images into a video yourself, for example with ffmpeg | FFmpeg |
+| **Ready-made looks** | 66 film styles, each with a demo film (lemo's library) | the same 66 film styles | starter templates | none in the core | about 450 blocks and components, plus design templates |
+| **Code licence** | MIT | MIT | Remotion License: free for individuals, non-profits and companies of up to 3 employees, paid above that | MIT | Apache-2.0 |
+| **Speed, measured here** | 2.5x faster than lemo on its Pixel RPG demo, 2.6x faster on an 8.4 min film | the baseline | not measured here | not measured here | not measured here |
 
-The empty cells are things this README doesn't measure or describe. Check each project's own docs.
+Sources, checked Nov 6 2026: Remotion's [encoding](https://www.remotion.dev/docs/encoding) and [hardware acceleration](https://www.remotion.dev/docs/hardware-acceleration) docs, Motion Canvas's [rendering](https://motioncanvas.io/docs/rendering/) docs and the [HyperFrames README](https://github.com/heygen-com/hyperframes). Projects change, so check their docs for the latest. Foldline's speed numbers are in [Results](#results).
 
 ## Install
 
