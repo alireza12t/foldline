@@ -10,10 +10,11 @@ Made for **Unfold**, an animated "What if" channel in a paper pop-up book style.
 
 </div>
 
-<!-- DEMO VIDEO: the explainer below was rendered by Foldline. -->
+<!-- DEMO VIDEO: the explainer below was rendered by Foldline. The player is a GitHub upload; the YouTube link is the fallback. -->
+https://github.com/user-attachments/assets/05724852-c9ae-4762-90a9-634315b2b016
+
 <p align="center">
-  <a href="https://youtu.be/VWgjNfQqT7k"><img src="docs/foldline/demo-poster.jpg" alt="Watch the Foldline explainer on YouTube" width="800"></a><br>
-  <b>▶ <a href="https://youtu.be/VWgjNfQqT7k">Watch the 96-second explainer on YouTube</a></b> · <a href="https://github.com/alireza12t/foldline/releases/download/v1.0.0/foldline-explainer.mp4">download the MP4</a> · <a href="https://medium.com/@devmvrick/part-2-i-made-my-code-drawn-videos-render-up-to-2-6x-faster-on-a-mac-free-open-source-3500fed32b95">read the deep dive on Medium</a><br>
+  <b>▶ <a href="https://youtu.be/VWgjNfQqT7k">Watch on YouTube</a></b> · <a href="https://github.com/alireza12t/foldline/releases/download/v1.0.0/foldline-explainer.mp4">download the MP4</a> · <a href="https://medium.com/@devmvrick/part-2-i-made-my-code-drawn-videos-render-up-to-2-6x-faster-on-a-mac-free-open-source-3500fed32b95">read the deep dive on Medium</a><br>
   <sub>Made with Foldline itself: every frame drawn in code, a local text-to-speech voice, music synthesised in code. It renders in 34 s. Source in <a href="examples/foldline-explainer/">examples/foldline-explainer</a>.</sub>
 </p>
 
