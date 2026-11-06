@@ -10,10 +10,11 @@ Made for **Unfold**, an animated "What if" channel in a paper pop-up book style.
 
 </div>
 
-<!-- DEMO VIDEO: swap in the explainer (and later the YouTube link) when it's published -->
+<!-- DEMO VIDEO: the explainer below was rendered by Foldline. Swap the link for the YouTube upload when it's live. -->
 <p align="center">
-  <img src="docs/foldline/demo-poster.jpg" alt="Foldline: 2.6x faster renders" width="800"><br>
-  <sub>A 96-second explainer, made with Foldline itself (every frame drawn in code, a local text-to-speech voice, music synthesised in code), is coming here soon.</sub>
+  <a href="https://github.com/alireza12t/foldline/releases/download/v1.0.0/foldline-explainer.mp4"><img src="docs/foldline/demo-poster.jpg" alt="Watch the Foldline explainer" width="800"></a><br>
+  <b>▶ <a href="https://github.com/alireza12t/foldline/releases/download/v1.0.0/foldline-explainer.mp4">Watch the 96-second explainer</a></b><br>
+  <sub>Made with Foldline itself: every frame drawn in code, a local text-to-speech voice, music synthesised in code. It renders in 34 s. Source in <a href="examples/foldline-explainer/">examples/foldline-explainer</a>.</sub>
 </p>
 
 ## What it is
