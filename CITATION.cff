@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use Foldline, please cite it as below. Please also credit LemoLab for lemo-opuscar, which Foldline builds on."
+type: software
+title: "Foldline"
+abstract: "Renders HTML canvas animations to H.264 MP4 fast on a Mac, by encoding inside headless Chrome with WebCodecs on the hardware encoder. Ships the full lemo-opuscar library of 66 film styles made in code."
+authors:
+  - family-names: "Toghiani"
+    given-names: "Alireza"
+version: "1.0.0"
+date-released: "2026-11-06"
+license: MIT
+repository-code: "https://github.com/alireza12t/foldline"
+url: "https://alireza12t.github.io/foldline/"
+keywords:
+  - html-to-video
+  - canvas-to-video
+  - webcodecs
+  - h264
+  - video-rendering
+  - programmatic-video
+  - headless-chrome
+  - macos
+references:
+  - type: software
+    title: "lemo-opuscar"
+    authors:
+      - name: "LemoLab"
+    repository-code: "https://github.com/lemomo-ai/lemo-opuscar"
+    license: MIT
