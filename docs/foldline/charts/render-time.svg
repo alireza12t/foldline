@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="406" viewBox="0 0 920 406" role="img" aria-label="Render time: before vs Foldline">
+<rect width="920" height="406" rx="16" fill="#0d1117"/>
+<text x="32" y="46" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="22" font-weight="700" fill="#f3efe6" text-anchor="start">Render time: before vs Foldline</text>
+<text x="32" y="72" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#8b93a1" text-anchor="start">Lower is better. Same picture in every case.</text>
+<rect x="670" y="37" width="14" height="14" rx="3" fill="#e8562b"/><text x="692" y="48" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#c9c3b8" text-anchor="start">Before</text><rect x="770" y="37" width="14" height="14" rx="3" fill="#1fa68d"/><text x="792" y="48" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#c9c3b8" text-anchor="start">Foldline</text>
+<rect x="20" y="98" width="880" height="84" rx="12" fill="#151b24"/>
+<text x="36" y="130" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#f3efe6" text-anchor="start">Unfold long video</text>
+<text x="36" y="154" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8b93a1" text-anchor="start">8.4 min film, 1920x1080, 60 fps</text>
+<line x1="392.5" y1="108" x2="392.5" y2="174" stroke="#2a3240" stroke-width="1"/>
+<line x1="485.0" y1="108" x2="485.0" y2="174" stroke="#2a3240" stroke-width="1"/>
+<line x1="577.5" y1="108" x2="577.5" y2="174" stroke="#2a3240" stroke-width="1"/>
+<line x1="670.0" y1="108" x2="670.0" y2="174" stroke="#2a3240" stroke-width="1"/>
+<line x1="300" y1="108" x2="300" y2="174" stroke="#8b93a1" stroke-width="1"/>
+<path d="M300,116 H666 Q670,116 670,120 V136 Q670,140 666,140 H300 Z" fill="#e8562b"/>
+<text x="680" y="133" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="500" fill="#c9c3b8" text-anchor="start">426 s (7.1 min)</text>
+<path d="M300,142 H435.8356807511737 Q439.8356807511737,142 439.8356807511737,146 V162 Q439.8356807511737,166 435.8356807511737,166 H300 Z" fill="#1fa68d"/>
+<text x="449.8356807511737" y="159" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#f3efe6" text-anchor="start">161 s (2.7 min)</text>
+<text x="884" y="150" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="800" fill="#ffd166" text-anchor="end">2.6x</text>
+<rect x="20" y="194" width="880" height="84" rx="12" fill="#151b24"/>
+<text x="36" y="226" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#f3efe6" text-anchor="start">Unfold Short, full build</text>
+<text x="36" y="250" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8b93a1" text-anchor="start">83 s, 1080x1920, 60 fps</text>
+<line x1="392.5" y1="204" x2="392.5" y2="270" stroke="#2a3240" stroke-width="1"/>
+<line x1="485.0" y1="204" x2="485.0" y2="270" stroke="#2a3240" stroke-width="1"/>
+<line x1="577.5" y1="204" x2="577.5" y2="270" stroke="#2a3240" stroke-width="1"/>
+<line x1="670.0" y1="204" x2="670.0" y2="270" stroke="#2a3240" stroke-width="1"/>
+<line x1="300" y1="204" x2="300" y2="270" stroke="#8b93a1" stroke-width="1"/>
+<path d="M300,212 H666 Q670,212 670,216 V232 Q670,236 666,236 H300 Z" fill="#e8562b"/>
+<text x="680" y="229" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="500" fill="#c9c3b8" text-anchor="start">60 s</text>
+<path d="M300,238 H481.0 Q485.0,238 485.0,242 V258 Q485.0,262 481.0,262 H300 Z" fill="#1fa68d"/>
+<text x="495.0" y="255" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#f3efe6" text-anchor="start">29 to 32 s</text>
+<text x="884" y="246" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="800" fill="#ffd166" text-anchor="end">2x</text>
+<rect x="20" y="290" width="880" height="84" rx="12" fill="#151b24"/>
+<text x="36" y="322" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#f3efe6" text-anchor="start">lemo Pixel RPG demo</text>
+<text x="36" y="346" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="400" fill="#8b93a1" text-anchor="start">54.5 s, 1920x1080, 24 fps</text>
+<line x1="392.5" y1="300" x2="392.5" y2="366" stroke="#2a3240" stroke-width="1"/>
+<line x1="485.0" y1="300" x2="485.0" y2="366" stroke="#2a3240" stroke-width="1"/>
+<line x1="577.5" y1="300" x2="577.5" y2="366" stroke="#2a3240" stroke-width="1"/>
+<line x1="670.0" y1="300" x2="670.0" y2="366" stroke="#2a3240" stroke-width="1"/>
+<line x1="300" y1="300" x2="300" y2="366" stroke="#8b93a1" stroke-width="1"/>
+<path d="M300,308 H666 Q670,308 670,312 V328 Q670,332 666,332 H300 Z" fill="#e8562b"/>
+<text x="680" y="325" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="500" fill="#c9c3b8" text-anchor="start">20.3 s</text>
+<path d="M300,334 H442.72413793103453 Q446.72413793103453,334 446.72413793103453,338 V354 Q446.72413793103453,358 442.72413793103453,358 H300 Z" fill="#1fa68d"/>
+<text x="456.72413793103453" y="351" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#f3efe6" text-anchor="start">8.0 s</text>
+<text x="884" y="342" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="800" fill="#ffd166" text-anchor="end">2.5x</text>
+<text x="32" y="388" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8b93a1" text-anchor="start">Measured on an M1 Pro, 16 GB, nothing else running, Nov 6 2026. Each row has its own scale.</text>
+</svg>

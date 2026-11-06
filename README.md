@@ -150,17 +150,26 @@ lemo's plugin and skill are for Claude Code. How to install them, and how to ask
 
 Measured on an M1 Pro with 16 GB, nothing else running, Nov 6 2026.
 
+<p align="center">
+  <img src="docs/foldline/charts/render-time.svg" alt="Render time, before vs Foldline: Unfold long video 426 s to 161 s (2.6x), Unfold Short full build 60 s to 29-32 s (2x), lemo Pixel RPG demo 20.3 s to 8.0 s (2.5x)" width="860">
+</p>
+<p align="center">
+  <img src="docs/foldline/charts/resources.svg" alt="CPU and memory, before vs Foldline: CPU time down 86% and 87%, peak RAM down 36% and 61%" width="860">
+</p>
+
+The tables below have every number behind the charts.
+
 ### Unfold Short
 
 Part 3: 83 s, 1080x1920, 60 fps, 4-sample motion blur.
 
-| | Before | Foldline |
-|---|---|---|
-| Full build | 60 s | 29-32 s (runs: 29.4, 29.0, 31.8) |
-| Render, screenshots + x264 | 69-88 s | |
-| Render, screenshots + hardware encoder | 45 s | |
-| Render, WebCodecs | | 29 s |
-| Peak RAM | 2.2 GB | 1.3-1.5 GB |
+| Render path | Render time | Full build | Peak RAM |
+|---|---|---|---|
+| Screenshots + x264 (the original) | 69-88 s | not measured | 3.0 GB |
+| JPEG frames from the canvas + hardware encoder | 45 s | 60 s | 2.2 GB |
+| **Foldline: WebCodecs in the page** | **29 s** | **29-32 s** (runs: 29.4, 29.0, 31.8) | **1.3-1.5 GB** |
+
+The full build also mixes the audio. Foldline's build runs the mix during the render instead of before it.
 
 ### Unfold long video
 
