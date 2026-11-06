@@ -24,6 +24,8 @@ Key facts:
 
 - [Explainer film source](https://github.com/alireza12t/foldline/tree/main/examples/foldline-explainer): a 96-second film made with Foldline itself (every frame drawn in code, a local text-to-speech voice, music synthesised in code). It renders in 34 s
 - [Explainer film, MP4](https://github.com/alireza12t/foldline/releases/download/v1.0.0/foldline-explainer.mp4): the rendered film, attached to release v1.0.0 (https://github.com/alireza12t/foldline/releases/tag/v1.0.0)
+- [Explainer film on YouTube](https://youtu.be/VWgjNfQqT7k): the same 96-second explainer, with English captions.
+- [Foldline deep dive on Medium](https://medium.com/@devmvrick/part-2-i-made-my-code-drawn-videos-render-up-to-2-6x-faster-on-a-mac-free-open-source-3500fed32b95): how Foldline works, the measurements, install and a first render, step by step.
 
 ## Agents
 
