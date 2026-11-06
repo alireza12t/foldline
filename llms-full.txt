@@ -70,6 +70,10 @@ node core/render/video.mjs my-film --size 1920x1080 --fps 60 --out my-film/out/v
 
 The renderer prints `enc=wc` when it used the fast in-page WebCodecs path.
 
+## Example film
+
+`examples/foldline-explainer/` is a 96-second, 1920x1080 explainer made with Foldline itself: every frame drawn in code, a local text-to-speech voice, music synthesised in code. It renders in 34 s. The finished MP4 is attached to release v1.0.0: https://github.com/alireza12t/foldline/releases/download/v1.0.0/foldline-explainer.mp4 (release page: https://github.com/alireza12t/foldline/releases/tag/v1.0.0). Source: https://github.com/alireza12t/foldline/tree/main/examples/foldline-explainer
+
 ## The page contract
 
 This comes from lemo-opuscar. Each film is a folder with an `index.html` that sets:

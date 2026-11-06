@@ -20,6 +20,11 @@ Key facts:
 - [Tool reference](https://raw.githubusercontent.com/alireza12t/foldline/main/core/README.md): every render, voice, music and mix command with its flags
 - [Technique guide](https://raw.githubusercontent.com/alireza12t/foldline/main/TECHNIQUE.md): install, page contract, voice, music, mix (by LemoLab)
 
+## Examples
+
+- [Explainer film source](https://github.com/alireza12t/foldline/tree/main/examples/foldline-explainer): a 96-second film made with Foldline itself (every frame drawn in code, a local text-to-speech voice, music synthesised in code). It renders in 34 s
+- [Explainer film, MP4](https://github.com/alireza12t/foldline/releases/download/v1.0.0/foldline-explainer.mp4): the rendered film, attached to release v1.0.0 (https://github.com/alireza12t/foldline/releases/tag/v1.0.0)
+
 ## Agents
 
 - [AGENTS.md](https://raw.githubusercontent.com/alireza12t/foldline/main/AGENTS.md): how a coding agent should direct and produce a film with the library (by LemoLab)
