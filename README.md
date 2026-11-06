@@ -2,7 +2,8 @@
 
 # Foldline
 
-**The lemo-opuscar film library with a much faster renderer on the Mac.**
+**Render HTML canvas animations to MP4, fast, on a Mac.**<br>
+With the full lemo-opuscar library of 66 film styles made in code.
 
 Made for **Unfold**, an animated "What if" channel in a paper pop-up book style.<br>
 <a href="https://www.youtube.com/@UnfoldAnimated"><img alt="Watch Unfold on YouTube" src="https://img.shields.io/badge/YouTube-Unfold-FF0000?style=for-the-badge&logo=youtube&logoColor=white"></a>
@@ -16,6 +17,8 @@ Made for **Unfold**, an animated "What if" channel in a paper pop-up book style.
 </p>
 
 ## What it is
+
+Foldline turns a web page that draws a film in code into an H.264 MP4. You write an HTML page with a `<canvas>` and a `render(t)` function. Foldline opens it in headless Chrome, draws every frame, and encodes the video inside the page with WebCodecs on the Mac's hardware encoder, so frames never leave the GPU. On an M1 Pro, an 8.4-minute 1080p 60 fps video renders in 161 s instead of 426 s (see [Results](#results)). It's free and open source, and it works well with coding agents like Claude Code.
 
 Foldline is a project by Alireza Toghiani, built for the Unfold channel. It isn't a GitHub fork. It ships the full [lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) library by LemoLab:
 
@@ -39,6 +42,20 @@ What Foldline adds is a faster video renderer, `core/render/video.mjs`.
 - **Output** is standard bt709 limited-range H.264 mp4.
 
 Everything else in the library works the way lemo describes it.
+
+## How it compares
+
+Foldline is a renderer plus a style library, not a framework or a timeline editor. You write the page, Foldline renders it.
+
+| | Foldline | lemo-opuscar (original) | [Remotion](https://github.com/remotion-dev/remotion) | [Motion Canvas](https://github.com/motion-canvas/motion-canvas) | [HyperFrames](https://github.com/heygen-com/hyperframes) |
+|---|---|---|---|---|---|
+| You write | an HTML page with `render(t)` | an HTML page with `render(t)` | React components | TypeScript scenes | HTML |
+| Frames reach the encoder | from the canvas, inside the page (WebCodecs) | as screenshots | | | |
+| Default encoder | WebCodecs hardware H.264, then VideoToolbox, then x264 | x264 | | | |
+| Code licence | MIT | MIT | Remotion License (free for individuals, non-profits and companies of up to 3 employees; a paid company licence above that) | MIT | Apache-2.0 |
+| Ready-made styles | 66 (lemo's) | 66 | | | |
+
+The empty cells are things this README doesn't measure or describe. Check each project's own docs.
 
 ## Install
 
@@ -208,6 +225,38 @@ Drawing a frame takes about 4 ms on the GPU. The ceiling now is the Mac's single
 - **Rendering without Chrome.** Node + Skia on the CPU was 18x slower per frame. Node + Skia on Metal (skia-canvas) topped out at 30 fps, 3.5x slower.
 - **Chrome's software encoder.** No faster in real renders, and it used more CPU.
 - **Mixing hardware and software encoders in one file.** Too risky for Instagram uploads.
+
+## FAQ
+
+**How do I render an HTML canvas animation to MP4?**
+Make a folder with an `index.html` that sets `window.DUR`, `window.render(t)` and `window.READY` ([the page contract](#the-page-contract)). Draw the film into one `<canvas id="c">` of the render size. Then run `node core/render/video.mjs my-film --size 1920x1080 --fps 60 --out my-film.mp4`. Foldline opens the page in headless Chrome, calls `render(t)` for every frame and writes an H.264 MP4.
+
+**Is it faster than screenshots + ffmpeg?**
+In our tests, yes. The 8.4-minute Unfold video took 426 s with screenshots and the Mac's hardware encoder, and 161 s with Foldline, with 86% less CPU time. lemo's Pixel RPG demo rendered 2.5x faster than lemo's original screenshots + x264 path. All numbers are in [Results](#results).
+
+**Why is it faster?**
+The screenshot path copies each frame out of the browser as a JPEG, then ffmpeg decodes it and encodes it again. Foldline hands the canvas straight to Chrome's WebCodecs `VideoEncoder` with hardware acceleration, so the frame stays on the GPU. Drawing a frame takes about 4 ms. The limit now is the Mac's hardware H.264 encoder.
+
+**Does it work on Windows or Linux?**
+It's built and tested on a Mac with Apple Silicon. The fast path needs Chrome's hardware H.264 encoder. When Chrome doesn't offer one, Foldline falls back to the screenshot path. VideoToolbox is Mac only, so on other systems that means x264, lemo's original path. It still renders, just not faster. We haven't tested Windows or Linux.
+
+**Does my page have to be a single canvas?**
+For the fast path, yes: one visible `<canvas id="c">` of the render size, and nothing else visible. Any other page (DOM elements, SVG, several canvases) still renders, through the screenshot path. 35 of the 66 lemo demos fit the fast path.
+
+**Does the video look different?**
+Not to the eye. The old and new long video differ by 42.3 dB on average (lowest frame 39.6 dB). Output is standard bt709 limited-range H.264 mp4.
+
+**Can I add sound?**
+Yes. `--audio my-film/mix.wav` muxes the file in as AAC 192k. The renderer refuses to finish if the result is missing its video or audio stream.
+
+**What is lemo-opuscar?**
+[lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) is LemoLab's open library of film styles made in code, for Claude Code. Each of the 66 styles has a style prompt and a demo film drawn entirely in code, with no video model. Foldline includes all of it. Only the video renderer changed (see [`NOTICE.md`](NOTICE.md)).
+
+**Can I use it with Claude Code or another coding agent?**
+Yes. lemo's Claude Code plugin is in `plugin/`, and agents that read [`AGENTS.md`](AGENTS.md) get the same guide. Start the agent inside this folder so it uses Foldline's renderer. Details are in [Using it with a coding agent](#using-it-with-a-coding-agent).
+
+**Is it free?**
+Yes. The code is MIT. lemo's demo films and stills are CC BY 4.0. It needs only free tools: Node, ffmpeg and Chrome's headless shell.
 
 ## Credits
 
