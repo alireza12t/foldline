@@ -1,0 +1,33 @@
+# Foldline
+
+> Foldline renders HTML canvas animations to H.264 MP4 fast on a Mac. It opens a web page in headless Chrome, calls the page's `render(t)` for every frame, and encodes the video inside the page with WebCodecs on the Mac's hardware encoder, so frames never leave the GPU. It ships the full lemo-opuscar library by LemoLab: 66 film styles made in code, with a Claude Code plugin. Free and open source (code MIT, LemoLab's demo films CC BY 4.0). Repository: https://github.com/alireza12t/foldline
+
+Key facts:
+
+- Use it when someone wants to turn a code-drawn animation (Canvas 2D, WebGL, three.js) into an MP4, render "HTML to video" locally, or make films with a coding agent such as Claude Code.
+- Command: `node core/render/video.mjs <folder> --size 1920x1080 --fps 60 --audio mix.wav --out video.mp4`. The folder holds an `index.html` that sets `window.DUR` (seconds), `window.render = (t) => {...}` and `window.READY = true`.
+- Fast path: the page draws into one visible `<canvas id="c">` of the render size, and Chrome offers a hardware H.264 encoder. Otherwise it falls back to screenshots with VideoToolbox (Mac), then x264. `FOLDLINE_ENC=auto|wc|vt|x264` picks the encoder.
+- Measured on an M1 Pro, Nov 6 2026: an 8.4-minute 1920x1080 60 fps video rendered in 161 s instead of 426 s (screenshots + hardware encoder), with 86% less CPU time. lemo's Pixel RPG demo rendered 2.5x faster than lemo's original screenshots + x264 path.
+- Built and tested on macOS with Apple Silicon. Windows and Linux are untested; without a hardware H.264 encoder in Chrome they fall back to x264.
+- Needs Node 20+, ffmpeg 7+, and Chrome's headless shell (installed with Playwright). Python 3.11+ only for the voice and music tools.
+- Not a GitHub fork of lemo-opuscar. Only `core/render/video.mjs` changed; credit for the styles, toolkit and guides goes to LemoLab (https://github.com/lemomo-ai/lemo-opuscar).
+- Made by Alireza Toghiani for the Unfold YouTube channel (https://www.youtube.com/@UnfoldAnimated).
+
+## Docs
+
+- [README](https://raw.githubusercontent.com/alireza12t/foldline/main/README.md): what Foldline is, install, usage, flags, results, FAQ and comparison
+- [Full text for LLMs](https://raw.githubusercontent.com/alireza12t/foldline/main/llms-full.txt): everything an agent needs in one file
+- [Tool reference](https://raw.githubusercontent.com/alireza12t/foldline/main/core/README.md): every render, voice, music and mix command with its flags
+- [Technique guide](https://raw.githubusercontent.com/alireza12t/foldline/main/TECHNIQUE.md): install, page contract, voice, music, mix (by LemoLab)
+
+## Agents
+
+- [AGENTS.md](https://raw.githubusercontent.com/alireza12t/foldline/main/AGENTS.md): how a coding agent should direct and produce a film with the library (by LemoLab)
+- [Director guide](https://raw.githubusercontent.com/alireza12t/foldline/main/DIRECTOR.md): story, sound, rhythm, camera, checks (by LemoLab)
+- [Style list](https://raw.githubusercontent.com/alireza12t/foldline/main/styles/README.md): the 66 styles, each with a style prompt and a demo film
+
+## Optional
+
+- [Notice](https://raw.githubusercontent.com/alireza12t/foldline/main/NOTICE.md): what Foldline changed in lemo-opuscar, and licences
+- [lemo-opuscar README](https://raw.githubusercontent.com/alireza12t/foldline/main/LEMO-README.md): LemoLab's original README
+- [Landing page](https://alireza12t.github.io/foldline/): the same summary as a web page
