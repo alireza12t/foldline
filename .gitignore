@@ -136,3 +136,20 @@ styles/*/demo/**/*_try.py
 # Superseded first-round review frames; only those a doc or CREDITS names are re-included
 styles/*/demo/stills/*_v1*
 !styles/art-deco/demo/stills/kit_v2.jpg
+
+# ---- Foldline: local-only files (most are already covered above; listed here so they never slip in) ----
+# Demo fonts fetched by fetch_fonts.mjs, per-demo installs, symlinked models and HDRIs
+styles/*/demo/fonts/*.woff2
+styles/*/demo/node_modules/
+core/assets/polyhaven/*.hdr
+core/tts/*.onnx
+core/tts/*.bin
+# Local secrets
+.env
+.env.*
+
+# Foldline example films: renders, voices and mixes are rebuilt locally
+examples/*/out/
+examples/*/voices/*.wav
+examples/*/voices/cand/
+examples/*/audio/
