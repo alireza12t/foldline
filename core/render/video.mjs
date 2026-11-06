@@ -41,12 +41,20 @@ segDir = fs.mkdtempSync(path.join(outDir, `.${base}_segs-`)); fs.writeFileSync(p
 const probe = await openDemo(dir, { w: W, h: H, q: Q }); const DUR = await probe.page.evaluate(() => window.DUR); await probe.browser.close();
 if (!(DUR > 0)) fail(`window.DUR must be a positive number of seconds (got ${DUR})`);
 const TOTAL = Math.round(DUR * FPS), per = Math.ceil(TOTAL / WK), t0 = Date.now();
+// Encoder for the segments. Default: x264 medium crf 14 (unchanged). LEMO_ENC=vt uses the Mac's hardware H.264 encoder (VideoToolbox):
+// it uses ~70% less CPU and ~0.8 GB less RAM than 3 x264 encoders (Unfold EP6, Nov 6; Shorts also render ~35% faster). Meant for films that go through mux.sh, which re-encodes
+// the picture anyway. LEMO_VTQ sets its quality (default 72: files about the size of x264 crf 14, PSNR 47.6 dB against them; after mux.sh the films differ by 46.7 dB, same colour averages). Falls back to x264 if the hardware encoder is unavailable.
+let ENC = process.env.LEMO_ENC || 'x264';
+if (ENC === 'vt') { try { execFileSync('ffmpeg', ['-v', 'error', '-f', 'lavfi', '-i', `color=s=${W}x${H}:d=0.1`, '-c:v', 'h264_videotoolbox', '-allow_sw', '0', '-f', 'null', '-'], { stdio: 'ignore' }); }
+  catch { console.error('[note] LEMO_ENC=vt: VideoToolbox unavailable, using x264'); ENC = 'x264'; } }
+const ENC_ARGS = ENC === 'vt' ? ['-c:v', 'h264_videotoolbox', '-q:v', process.env.LEMO_VTQ || '72', '-allow_sw', '0', '-bsf:v', 'h264_metadata=matrix_coefficients=5']
+  : ['-c:v', 'libx264', '-preset', 'medium', '-crf', '14'];
 try { await Promise.all([...Array(WK)].map(async (_, w) => {
   const a = w * per, b = Math.min(TOTAL, a + per); if (a >= b) return;
   const { browser, page } = await openDemo(dir, { w: W, h: H, q: Q });
   // cwd set to the segment directory with relative filenames: that way ffmpeg won't read characters such as # ? in the path as protocol syntax
   const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'mjpeg', '-i', '-',
-    '-c:v', 'libx264', '-preset', 'medium', '-crf', '14', '-pix_fmt', 'yuv420p', `seg_${w}.mp4`], { cwd: segDir, stdio: ['pipe', 'inherit', 'inherit'] });
+    ...ENC_ARGS, '-pix_fmt', 'yuv420p', `seg_${w}.mp4`], { cwd: segDir, stdio: ['pipe', 'inherit', 'inherit'] });
   procs.add(ff); ff.on('close', () => procs.delete(ff));
   let dead = null;   // ffmpeg exited early (missing encoder, disk full…): its own error is already on stderr; here we just note it and stop feeding frames
   let done; const closed = new Promise(r => { done = r; }); ff.on('close', code => done(code));
@@ -68,5 +76,5 @@ try { execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe
 catch { fail('ffmpeg could not join the segments (its message is above)'); }
 fs.renameSync(path.join(segDir, 'merged.mp4'), out);   // any characters in the final filename are fine: it doesn't go through ffmpeg
 cleanup(); release();
-console.log('done', out, TOTAL, 'frames', ((Date.now() - t0) / 1000).toFixed(0) + 's');
+console.log('done', out, TOTAL, 'frames', ((Date.now() - t0) / 1000).toFixed(0) + 's', 'enc=' + ENC);
 closeServer();
