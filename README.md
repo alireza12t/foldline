@@ -20,7 +20,7 @@ https://github.com/user-attachments/assets/05724852-c9ae-4762-90a9-634315b2b016
 
 ## What it is
 
-Foldline turns a web page that draws a film in code into an H.264 MP4. You write an HTML page with a `<canvas>` and a `render(t)` function. Foldline opens it in headless Chrome, draws every frame, and encodes the video inside the page with WebCodecs on the Mac's hardware encoder, so frames never leave the GPU. On an M1 Pro, an 8.4-minute 1080p 60 fps video renders in 161 s instead of 426 s (see [Results](#results)). It's free and open source, and it works well with coding agents like Claude Code.
+Foldline turns a web page that draws a film in code into an H.264 MP4. You write an HTML page with a `<canvas>` and a `render(t)` function. Foldline opens it in headless Chrome, draws every frame, and encodes the video inside the page with WebCodecs on the Mac's hardware encoder, so frames never leave the GPU. On an M1 Pro, an 8.4-minute 1080p 60 fps video renders in 161 s instead of 426 s (see [Results](#results)). It's open source and free for non-commercial use, and it works well with coding agents like Claude Code.
 
 Foldline is a project by Alireza Toghiani, built for the Unfold channel. It isn't a GitHub fork. It ships the full [lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) library by LemoLab:
 
@@ -55,7 +55,7 @@ Foldline is a renderer plus a style library, not a framework or a timeline edito
 | **How frames are made** | Chrome draws the canvas, and the page hands each frame to the encoder (WebCodecs). Frames stay on the GPU. | Chrome draws the page, and each frame is taken as a JPEG screenshot | Chrome draws each frame, and FFmpeg encodes them | the browser saves each frame as an image file (PNG, JPEG or WebP) | headless Chrome (Puppeteer) seeks each frame, and FFmpeg encodes them |
 | **Video encoder by default** | Mac hardware H.264, falling back to VideoToolbox, then x264 | x264 (software) | FFmpeg, H.264. Hardware encoding (VideoToolbox on Mac, NVENC) is available but off by default. | none built in: you turn the images into a video yourself, for example with ffmpeg | FFmpeg |
 | **Ready-made looks** | 66 film styles, each with a demo film (lemo's library) | the same 66 film styles | starter templates | none in the core | about 450 blocks and components, plus design templates |
-| **Code licence** | MIT | MIT | Remotion License: free for individuals, non-profits and companies of up to 3 employees, paid above that | MIT | Apache-2.0 |
+| **Code licence** | PolyForm Noncommercial: free for non-commercial use, commercial licence on request (lemo's original code stays MIT) | MIT | Remotion License: free for individuals, non-profits and companies of up to 3 employees, paid above that | MIT | Apache-2.0 |
 | **Speed, measured here** | 2.5x faster than lemo on its Pixel RPG demo, 2.6x faster on an 8.4 min film | the baseline | not measured here | not measured here | not measured here |
 
 Sources, checked Nov 6 2026: Remotion's [encoding](https://www.remotion.dev/docs/encoding) and [hardware acceleration](https://www.remotion.dev/docs/hardware-acceleration) docs, Motion Canvas's [rendering](https://motioncanvas.io/docs/rendering/) docs and the [HyperFrames README](https://github.com/heygen-com/hyperframes). Projects change, so check their docs for the latest. Foldline's speed numbers are in [Results](#results).
@@ -259,7 +259,10 @@ Yes. `--audio my-film/mix.wav` muxes the file in as AAC 192k. The renderer refus
 Yes. lemo's Claude Code plugin is in `plugin/`, and agents that read [`AGENTS.md`](AGENTS.md) get the same guide. Start the agent inside this folder so it uses Foldline's renderer. Details are in [Using it with a coding agent](#using-it-with-a-coding-agent).
 
 **Is it free?**
-Yes. The code is MIT. lemo's demo films and stills are CC BY 4.0. It needs only free tools: Node, ffmpeg and Chrome's headless shell.
+Yes, for anything non-commercial: personal projects, learning, research, hobby films and open work you don't get paid for. You can read, change and share the code in public. It needs only free tools: Node, ffmpeg and Chrome's headless shell.
+
+**Can I use it to make money?**
+Not without a commercial licence. That covers selling Foldline or a service built on it, and paid work made with it, like client videos or monetized channels. To ask for a licence, [open an issue](https://github.com/alireza12t/foldline/issues/new?title=Commercial%20licence) with "Commercial licence" in the title. lemo's original code is MIT and free for any use from [lemo's repository](https://github.com/lemomo-ai/lemo-opuscar).
 
 ## Credits
 
@@ -277,10 +280,12 @@ Foldline's changes to lemo-opuscar are listed in [What's new vs lemo-opuscar](#w
 
 ## Licence
 
-- **Code**: MIT, copyright LemoLab and Alireza Toghiani. See [`LICENSE`](LICENSE).
+- **Foldline's code**: [PolyForm Noncommercial 1.0.0](LICENSE), copyright Alireza Toghiani. Free to use, change and share for any non-commercial purpose. Commercial use needs a licence: [open an issue](https://github.com/alireza12t/foldline/issues/new?title=Commercial%20licence) with "Commercial licence" in the title.
+- **lemo-opuscar's original code**: [MIT](LICENSE-MIT), copyright LemoLab. [`NOTICE.md`](NOTICE.md) says which parts are which.
+- Copies downloaded before November 7, 2026 were MIT and stay MIT.
 - **Demo films and their stills** from lemo-opuscar (in `styles/`): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Credit **LemoLab** with a link to [the lemo-opuscar repository](https://github.com/lemomo-ai/lemo-opuscar), and say if you changed them.
 - **Three voice tracks are not CC BY 4.0**: the shouts in Game Show Flat (macOS system voices, `say`), the narration in Paper-cut Lightbox (Microsoft Edge TTS), which will be re-voiced with Kokoro, and the narration in Broadcast News Package (Doubao TTS, under Volcengine's terms). They are excluded from the licence above. Don't reuse them; in your own films use Kokoro (the default) or a voice you have the right to use.
-- **Films you make with it**: yours.
+- **Films you make with it**: yours. If you make them to earn money, you need a commercial licence for Foldline first.
 
 ---
 
