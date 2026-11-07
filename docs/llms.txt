@@ -1,6 +1,6 @@
 # Foldline
 
-> Foldline renders HTML canvas animations to H.264 MP4 fast on a Mac. It opens a web page in headless Chrome, calls the page's `render(t)` for every frame, and encodes the video inside the page with WebCodecs on the Mac's hardware encoder, so frames never leave the GPU. It ships the full lemo-opuscar library by LemoLab: 66 film styles made in code, with a Claude Code plugin. Free and open source (code MIT, LemoLab's demo films CC BY 4.0). Repository: https://github.com/alireza12t/foldline
+> Foldline renders HTML canvas animations to H.264 MP4 fast on a Mac. It opens a web page in headless Chrome, calls the page's `render(t)` for every frame, and encodes the video inside the page with WebCodecs on the Mac's hardware encoder, so frames never leave the GPU. It ships the full lemo-opuscar library by LemoLab: 66 film styles made in code, with a Claude Code plugin. Open source and free for non-commercial use (PolyForm Noncommercial 1.0.0; commercial use needs a licence from the author). LemoLab's original lemo-opuscar code stays MIT and its demo films are CC BY 4.0. Repository: https://github.com/alireza12t/foldline
 
 Key facts:
 

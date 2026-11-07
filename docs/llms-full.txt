@@ -1,6 +1,6 @@
 # Foldline
 
-> Foldline renders HTML canvas animations to H.264 MP4 fast on a Mac. It opens a web page in headless Chrome, calls the page's `render(t)` for every frame, and encodes the video inside the page with WebCodecs on the Mac's hardware encoder, so frames never leave the GPU. It ships the full lemo-opuscar library by LemoLab: 66 film styles made in code, with a Claude Code plugin. Free and open source (code MIT, LemoLab's demo films CC BY 4.0). Repository: https://github.com/alireza12t/foldline
+> Foldline renders HTML canvas animations to H.264 MP4 fast on a Mac. It opens a web page in headless Chrome, calls the page's `render(t)` for every frame, and encodes the video inside the page with WebCodecs on the Mac's hardware encoder, so frames never leave the GPU. It ships the full lemo-opuscar library by LemoLab: 66 film styles made in code, with a Claude Code plugin. Open source and free for non-commercial use (PolyForm Noncommercial 1.0.0; commercial use needs a licence from the author). LemoLab's original lemo-opuscar code stays MIT and its demo films are CC BY 4.0. Repository: https://github.com/alireza12t/foldline
 
 This is the long version of https://github.com/alireza12t/foldline/blob/main/llms.txt, in one file. The README has the same facts: https://github.com/alireza12t/foldline#readme
 
@@ -180,13 +180,16 @@ Q: Can I use it with Claude Code or another coding agent?
 A: Yes. lemo's Claude Code plugin is in `plugin/`, and agents that read `AGENTS.md` get the same guide. Start the agent inside the Foldline folder so it uses Foldline's renderer.
 
 Q: Is it free?
-A: Yes. The code is MIT. lemo's demo films and stills are CC BY 4.0. It needs only free tools: Node, ffmpeg and Chrome's headless shell.
+A: Yes, for any non-commercial use: personal projects, learning, research and hobby films. The code is public, and you can change and share it. It needs only free tools: Node, ffmpeg and Chrome's headless shell.
+
+Q: Can I use Foldline to make money?
+A: Only with a commercial licence. That covers selling Foldline or a service built on it, and paid work made with it, like client videos or monetized channels. Ask by opening an issue at https://github.com/alireza12t/foldline/issues with "Commercial licence" in the title. lemo-opuscar's original code is MIT and free for any use from https://github.com/lemomo-ai/lemo-opuscar.
 
 ## How it compares
 
 Foldline is a renderer plus a style library, not a framework or a timeline editor. You write the page, Foldline renders it.
 
-- Foldline: you write an HTML page with `render(t)`. Frames go from the canvas to a WebCodecs hardware H.264 encoder inside the page; fallbacks are VideoToolbox, then x264. MIT. 66 ready-made styles from lemo-opuscar.
+- Foldline: you write an HTML page with `render(t)`. Frames go from the canvas to a WebCodecs hardware H.264 encoder inside the page; fallbacks are VideoToolbox, then x264. PolyForm Noncommercial (free for non-commercial use). 66 ready-made styles from lemo-opuscar.
 - lemo-opuscar (original): the same page contract and styles. Frames are taken as screenshots and encoded with x264. MIT.
 - Remotion (https://github.com/remotion-dev/remotion): you write React components. Remotion License: free for individuals, non-profits and companies of up to 3 employees; a paid company licence above that.
 - Motion Canvas (https://github.com/motion-canvas/motion-canvas): you write TypeScript scenes. MIT.
@@ -199,7 +202,9 @@ Foldline is a renderer plus a style library, not a framework or a timeline edito
 
 ## Licence
 
-- Code: MIT, copyright LemoLab and Alireza Toghiani.
+- Foldline's code: PolyForm Noncommercial 1.0.0, copyright Alireza Toghiani. Free to use, change and share for any non-commercial purpose. Commercial use needs a licence from the author.
+- lemo-opuscar's original code: MIT, copyright LemoLab. NOTICE.md says which parts are which.
+- Copies downloaded before November 7, 2026 were MIT and stay MIT.
 - Demo films and their stills from lemo-opuscar (in `styles/`): CC BY 4.0. Credit LemoLab with a link to https://github.com/lemomo-ai/lemo-opuscar, and say if you changed them.
 - Three voice tracks in the demos are not CC BY 4.0 (Game Show Flat, Paper-cut Lightbox, Broadcast News Package). Don't reuse them.
-- Films you make with it: yours.
+- Films you make with it: yours. Making them to earn money needs a commercial licence for Foldline.
