@@ -4,7 +4,12 @@ Foldline includes [lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) by [
 
 ## Code and docs
 
-The code and docs are under the MIT licence. See [LICENSE](LICENSE). It keeps LemoLab's copyright notice next to ours.
+Foldline's code is under two licences:
+
+- **Foldline's own work** is under the [PolyForm Noncommercial License 1.0.0](LICENSE). That covers every change and addition made after the import of lemo-opuscar `f171360`: the WebCodecs encoder and the other changes to `core/render/video.mjs`, `examples/`, `docs/`, the README, `llms.txt`, `llms-full.txt`, `tools/sync-pages.sh` and `tools/social-preview/`. Free for any non-commercial use. Making money with it needs a commercial licence: open an issue on this repository with "Commercial licence" in the title.
+- **LemoLab's original lemo-opuscar code** stays under the [MIT licence](LICENSE-MIT), with LemoLab's copyright notice. You can use those original parts under MIT, for example from [lemo's own repository](https://github.com/lemomo-ai/lemo-opuscar).
+
+Copies of Foldline downloaded before November 7, 2026 were under the MIT licence and stay under it.
 
 ## Demo films and stills
 
