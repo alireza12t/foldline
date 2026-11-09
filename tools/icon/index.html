@@ -1,0 +1,36 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Foldline icon, 1024x1024: the folded film frame from the social preview. Render from the repo folder:
+     node core/render/still.mjs tools/icon 0 --size 1024x1024 --out /tmp/icon
+     ffmpeg -i /tmp/icon/t_0.jpg foldline-plugin/.claude-plugin/icon.png -->
+<style>html,body{margin:0;background:#10141c}canvas{display:block}</style>
+</head><body><canvas id="c" width="1024" height="1024"></canvas>
+<script>
+const c = document.getElementById('c'), x = c.getContext('2d'), S = 1024;
+const INK = '#10141c', PAPER = '#f3efe6', CORAL = '#ff6a3d';
+function rr(X, Y, w, h, r) { x.beginPath(); x.roundRect(X, Y, w, h, r); }
+window.DUR = 1;
+window.render = () => {
+  x.fillStyle = INK; x.fillRect(0, 0, S, S);
+  const g = x.createRadialGradient(S / 2, S / 2, 60, S / 2, S / 2, S * .62); g.addColorStop(0, 'rgba(46,196,166,.34)'); g.addColorStop(1, 'rgba(46,196,166,0)');
+  x.fillStyle = g; x.fillRect(0, 0, S, S);
+  x.strokeStyle = 'rgba(243,239,230,.05)'; x.lineWidth = 2;
+  for (let i = 0; i <= S; i += 64) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, S); x.stroke(); x.beginPath(); x.moveTo(0, i); x.lineTo(S, i); x.stroke(); }
+
+  // folded film frame with a play triangle, scaled up from the social preview
+  x.save(); x.translate(S / 2, S / 2 + 6); x.rotate(-.06);
+  x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowBlur = 40; x.shadowOffsetY = 18;
+  const fw = 760, fh = 492, n = 4;
+  for (let i = 0; i < n; i++) {
+    const X = -fw / 2 + i * fw / n, sk = i % 2 ? .07 : -.07;
+    x.save(); x.transform(1, sk, 0, 1, 0, 0);
+    rr(X, -fh / 2, fw / n + 2, fh, i === 0 || i === n - 1 ? 40 : 4); x.fillStyle = PAPER; x.fill();
+    if (i % 2) { x.shadowColor = 'transparent'; x.fillStyle = 'rgba(16,20,28,.10)'; x.fill(); }
+    x.restore();
+  }
+  x.shadowColor = 'transparent';
+  x.beginPath(); x.moveTo(-72, -112); x.lineTo(-72, 112); x.lineTo(122, 0); x.closePath(); x.fillStyle = CORAL; x.fill();
+  x.restore();
+};
+window.render(0); window.READY = true;
+</script></body></html>
