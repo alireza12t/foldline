@@ -44,6 +44,17 @@ The Pages build (`build.py --site`) also writes the OPUSCAR 98 page (`opuscar98/
 
 Don't push before the upload has finished, and don't commit `tools/assets.json` from a failed run.
 
+## Release the MCP package
+
+Foldline ships in three places that must move together: npm (`foldline-mcp`), the MCP Registry (`server.json`) and the Claude directory copy ([alireza12t/foldline-claude-plugin](https://github.com/alireza12t/foldline-claude-plugin), skill only). `package.json` holds the one version.
+
+1. `node tools/version.mjs set <x.y.z>` (three parts, only when the owner asks for a release) writes it into `package.json`, `package-lock.json` and `server.json`. `npm test` fails if they ever disagree.
+2. Commit (`Release <x.y.z>`), push `main`, then `git tag v<x.y.z>`, `git push origin v<x.y.z>` and `gh release create v<x.y.z>` with the changes.
+3. `npm publish` (needs the owner's npm login and browser 2FA), then `mcp-publisher publish` (logs in with a GitHub device code when its token has expired).
+4. `sh tools/sync-claude-plugin.sh` copies `foldline-plugin/skills/foldline/SKILL.md` and the version into the plugin repo. Review, commit and push there. Do this too whenever that SKILL.md changes.
+
+The plugin repo's CI ("In sync with Foldline") runs daily and on each push. It fails, and GitHub emails the owner, when its skill or version differ from this repo's `main`, and it warns when npm is behind.
+
 ## Revise a style
 
 Back up first (old versions move out of the repository, not into git). Re-render, replace `<slug>.mp4`, and run `sh tools/publish.sh`: it re-uploads the film and refreshes its web cut.
