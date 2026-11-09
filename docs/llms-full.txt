@@ -125,9 +125,9 @@ Stills for review: `node core/render/still.mjs <dir> 3 20 --out <dir>` writes JP
 
 ## MCP server
 
-`core/mcp/server.mjs` is a stdio MCP server. Add it with `claude mcp add --scope user foldline -- node /path/to/foldline/core/mcp/server.mjs` (other clients take the same command). Inside the repo, `.mcp.json` registers it for Claude Code.
+`core/mcp/server.mjs` is a stdio MCP server, published on npm as `foldline-mcp` and in the MCP Registry as `io.github.alireza12t/foldline`. Claude Code: `claude plugin install foldline --marketplace alireza12t/foldline`, or `claude mcp add --scope user foldline -- npx -y foldline-mcp`. Codex, Cursor, VS Code and Claude Desktop: command `npx`, args `["-y", "foldline-mcp"]`. Needs Node 20+, ffmpeg and Chrome's headless shell (`npx playwright-core@1.63.0 install chromium-headless-shell`). Inside the repo, `.mcp.json` registers a local copy for Claude Code.
 
-Tools: `find_styles` (search the 66 styles), `get_style` (a style prompt), `read_guide` (table of contents, or one section of AGENTS, DIRECTOR, TECHNIQUE, MY-STYLES, the tool reference and others), `render_stills` (JPEGs, optionally one contact sheet image), `render_video` (full render, returns only the done line), `check_reading` (text timing, failures only), `export_events`, `make_voice` (Kokoro or Edge TTS), `check_voice` (Whisper), `mux_audio` (-14 LUFS master), `make_subtitles` (.srt).
+Tools: `find_styles` (search the 66 styles), `get_style` (a style prompt), `read_guide` (table of contents, or one section of AGENTS, DIRECTOR, TECHNIQUE, MY-STYLES, the tool reference and others), `render_stills` (JPEGs, optionally one contact sheet image), `render_video` (full render, returns only the done line), `check_reading` (text timing, failures only), `export_events`, `make_voice` (Kokoro or Edge TTS), `check_voice` (Whisper), `mux_audio` (-14 LUFS master), `make_subtitles` (.srt), `fetch_assets` (voice model, HDRIs, instruments).
 
 Results are short so agents spend fewer tokens. Renders run under `nice`. Python tools use `FOLDLINE_PYTHON`, then `.venv`, then `~/lemo-opuscar/.venv`.
 

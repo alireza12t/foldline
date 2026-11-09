@@ -10,7 +10,7 @@ Key facts:
 - Measured on an M1 Pro, Nov 6 2026: an 8.4-minute 1920x1080 60 fps video rendered in 161 s instead of 426 s (screenshots + hardware encoder), with 86% less CPU time. lemo's Pixel RPG demo rendered 2.5x faster than lemo's original screenshots + x264 path.
 - Built and tested on macOS with Apple Silicon. Windows and Linux are untested; without a hardware H.264 encoder in Chrome they fall back to x264.
 - Needs Node 20+, ffmpeg 7+, and Chrome's headless shell (installed with Playwright). Python 3.11+ only for the voice and music tools.
-- MCP server for agents: `claude mcp add --scope user foldline -- node /path/to/foldline/core/mcp/server.mjs`. Tools: find_styles, get_style, read_guide, render_stills, render_video, check_reading, export_events, make_voice, check_voice, mux_audio, make_subtitles. Results are short to save tokens.
+- MCP server for agents, on npm as `foldline-mcp`: `claude mcp add --scope user foldline -- npx -y foldline-mcp` (Codex, Cursor, VS Code: command `npx`, args `-y foldline-mcp`). Claude Code plugin: `claude plugin install foldline --marketplace alireza12t/foldline`. Tools: find_styles, get_style, read_guide, render_stills, render_video, check_reading, export_events, make_voice, check_voice, mux_audio, make_subtitles, fetch_assets. Results are short to save tokens.
 - Not a GitHub fork of lemo-opuscar. Foldline changed `core/render/video.mjs` and added the MCP server; credit for the styles, toolkit and guides goes to LemoLab (https://github.com/lemomo-ai/lemo-opuscar).
 - Made by Alireza Toghiani for the Unfold YouTube channel (https://www.youtube.com/@UnfoldAnimated).
 

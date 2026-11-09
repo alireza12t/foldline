@@ -169,13 +169,43 @@ lemo's plugin and skill are for Claude Code. How to install them, and how to ask
 
 ### MCP server
 
-Foldline has an MCP server, so Claude Code, Cursor, Codex and other agents can call its tools directly instead of reading the guides and running commands by hand. Add it once:
+Foldline has an MCP server, so Claude Code, Codex, Cursor and other agents can call its tools directly instead of reading the guides and running commands by hand. It's on npm as [`foldline-mcp`](https://www.npmjs.com/package/foldline-mcp), and it's listed in the [MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.alireza12t/foldline`.
+
+You need Node 20+, ffmpeg (`brew install ffmpeg`) and Chrome's headless shell, installed once with `npx playwright-core@1.63.0 install chromium-headless-shell`. The server tells you if one is missing.
+
+**Claude Code**, as a plugin:
 
 ```sh
-claude mcp add --scope user foldline -- node /path/to/foldline/core/mcp/server.mjs
+claude plugin install foldline --marketplace alireza12t/foldline
 ```
 
-Other clients take the same command in their MCP settings. Inside this folder, Claude Code finds it on its own through `.mcp.json`.
+or as a plain MCP server:
+
+```sh
+claude mcp add --scope user foldline -- npx -y foldline-mcp
+```
+
+**Codex**, in `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.foldline]
+command = "npx"
+args = ["-y", "foldline-mcp"]
+```
+
+**Cursor** (`~/.cursor/mcp.json`), **Claude Desktop** and most other clients:
+
+```json
+{ "mcpServers": { "foldline": { "command": "npx", "args": ["-y", "foldline-mcp"] } } }
+```
+
+**VS Code** (`.vscode/mcp.json`):
+
+```json
+{ "servers": { "foldline": { "command": "npx", "args": ["-y", "foldline-mcp"] } } }
+```
+
+To use your own clone instead of npm, point the command at it: `node /path/to/foldline/core/mcp/server.mjs`. Inside this folder, Claude Code finds it on its own through `.mcp.json`.
 
 | Tool | What it does |
 |---|---|
@@ -189,6 +219,7 @@ Other clients take the same command in their MCP settings. Inside this folder, C
 | `make_voice`, `check_voice` | Kokoro or Edge TTS, then a Whisper check |
 | `mux_audio` | mix under the video, mastered to -14 LUFS |
 | `make_subtitles` | an `.srt` from cues |
+| `fetch_assets` | downloads the voice model, the HDRI skies for 3D styles, or an instrument library |
 
 It's built to save tokens. Results are short, a guide comes one section at a time, and renders don't stream their progress log into the chat. Renders run at low priority (`nice`). The voice, sheet and subtitle tools use Python from `FOLDLINE_PYTHON`, the library's `.venv` or `~/lemo-opuscar/.venv`, in that order.
 
