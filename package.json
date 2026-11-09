@@ -1,10 +1,13 @@
 {
-  "name": "foldline",
+  "name": "foldline-mcp",
   "version": "1.0.0",
-  "private": true,
+  "mcpName": "io.github.alireza12t/foldline",
   "type": "module",
-  "description": "Render HTML canvas animations to MP4 fast on a Mac: in-page WebCodecs hardware H.264 encoding in headless Chrome, with the full lemo-opuscar style library. Made for the Unfold YouTube channel.",
+  "description": "Foldline: render HTML canvas animations to MP4 fast on a Mac (WebCodecs hardware H.264 in headless Chrome), with an MCP server for coding agents and 66 code-made film styles.",
   "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
     "html-to-video",
     "canvas-to-video",
     "canvas-to-mp4",
@@ -27,15 +30,42 @@
   ],
   "homepage": "https://alireza12t.github.io/foldline/",
   "author": "Alireza Toghiani",
-  "repository": "https://github.com/alireza12t/foldline",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alireza12t/foldline.git"
+  },
+  "bin": {
+    "foldline-mcp": "core/mcp/server.mjs"
+  },
+  "files": [
+    "core/",
+    "styles/README.md",
+    "styles/*/STYLE.md",
+    "styles/*/DEMO.md",
+    "styles/*/style.json",
+    "AGENTS.md",
+    "DIRECTOR.md",
+    "TECHNIQUE.md",
+    "MY-STYLES.md",
+    "LEMO-README.md",
+    "NOTICE.md",
+    "LICENSE",
+    "LICENSE-MIT",
+    "llms.txt",
+    "llms-full.txt",
+    "requirements*.txt",
+    "plugin/skills/lemo-opuscar/scripts/",
+    "tools/fetch.sh",
+    "tools/assets.json"
+  ],
   "engines": {
     "node": ">=20"
   },
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
-    "playwright-core": "^1.63.0",
-    "three": "^0.170.0",
+    "playwright-core": "1.63.0",
+    "three": "0.170.0",
     "zod": "^4.6.7"
   }
 }

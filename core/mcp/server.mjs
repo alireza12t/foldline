@@ -17,6 +17,11 @@ const VERSION = JSON.parse(fs.readFileSync(path.join(LIB, 'package.json'), 'utf8
 const abs = p => path.resolve(LIB, p.replace(/^~(?=$|\/)/, os.homedir()));
 const TAIL = 40;   // lines of output kept when a command fails
 
+// Installed with npm or npx, the dependencies sit next to this package instead of inside it.
+// Pages load /node_modules/... from the library root, so point LIB/node_modules at them.
+const NM = path.join(LIB, 'node_modules');
+if (!fs.existsSync(NM) && path.basename(path.dirname(LIB)) === 'node_modules') { try { fs.symlinkSync('..', NM); } catch {} }
+
 // ---------- helpers ----------
 
 // Python for the voice, music and sheet tools: FOLDLINE_PYTHON, then the library's .venv, then lemo-opuscar's .venv.
@@ -55,7 +60,13 @@ function run(cmd, args, { onLine, signal, nice = true, env = {} } = {}) {
 
 const text = t => ({ content: [{ type: 'text', text: t }] });
 const fail = t => ({ content: [{ type: 'text', text: t }], isError: true });
-const tail = lines => lines.slice(-TAIL).join('\n');
+const PW = JSON.parse(fs.readFileSync(path.join(LIB, 'package.json'), 'utf8')).dependencies['playwright-core'];
+const tail = lines => {
+  const t = lines.join('\n');
+  if (/Executable doesn't exist/.test(t)) return `Chrome's headless shell is not installed. Install it once with:\n  npx playwright-core@${PW} install chromium-headless-shell\nor set PLAYWRIGHT_CHROME to a chrome-headless-shell you have.`;
+  if (/ffmpeg: (command )?not found|spawn ffmpeg ENOENT/.test(t)) return 'ffmpeg is not installed. On a Mac: brew install ffmpeg';
+  return lines.slice(-TAIL).join('\n');
+};
 const sizeArgs = (size, q) => [...(size ? ['--size', size] : []), ...(q ? ['--q', q] : [])];
 const sizeSchema = z.string().regex(/^\d+x\d+$/).optional().describe('Frame size WxH, even numbers. Default 1920x1080; 1080x1920 for a vertical Short.');
 const qSchema = z.string().optional().describe("Query string passed to the page as location.search, e.g. 'lang=en&cut=b'.");
@@ -224,8 +235,8 @@ server.registerTool('render_video', {
   });
   const done = r.lines.find(l => l.startsWith('done '));
   if (r.code || !done) return fail(`video.mjs failed (exit ${r.code}):\n${tail(r.lines)}`);
-  const notes = r.lines.filter(l => /fall|warn|optional file missing/i.test(l)).slice(0, 10);
-  return text(done + (notes.length ? `\n${notes.join('\n')}` : ''));
+  const notes = r.lines.filter(l => /fall|warn|optional file missing/i.test(l));
+  return text(done + (notes.length ? `\n${notes.slice(0, 3).join('\n')}${notes.length > 3 ? `\n(+${notes.length - 3} more notes like these)` : ''}` : ''));
 });
 
 server.registerTool('check_reading', {
@@ -327,6 +338,21 @@ server.registerTool('make_subtitles', {
   const r = await run(py, ['core/render/srt.py', cj, file], { signal: extra.signal, nice: false });
   if (r.code) return fail(`srt.py failed (exit ${r.code}):\n${tail(r.lines)}`);
   return text(`${file} (${cues.length} cues)`);
+});
+
+server.registerTool('fetch_assets', {
+  title: 'Download optional big assets',
+  description: 'Downloads assets that are not shipped with Foldline into its library folder: the Kokoro voice model (voice), the HDRI skies that 3D styles light with (hdri), or a sampled instrument library (instruments).',
+  inputSchema: {
+    what: z.enum(['voice', 'hdri', 'instruments']),
+    lib: z.enum(['freepats', 'karoryfer', 'salamander', 'vcsl', 'vsco2ce', 'all']).optional().describe('For instruments: which library.'),
+  },
+  annotations: { openWorldHint: true },
+}, async ({ what, lib }, extra) => {
+  if (what === 'instruments' && !lib) return fail('Say which instrument library: freepats, karoryfer, salamander, vcsl, vsco2ce or all.');
+  const r = await run('sh', ['tools/fetch.sh', what, ...(lib ? [lib] : [])], { signal: extra.signal, nice: false });
+  if (r.code) return fail(`fetch.sh failed (exit ${r.code}):\n${tail(r.lines)}`);
+  return text(`Done.\n${r.lines.filter(l => /^[✓↓]|already/i.test(l.trim())).join('\n')}`);
 });
 
 await server.connect(new StdioServerTransport());
