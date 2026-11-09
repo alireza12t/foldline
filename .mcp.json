@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "foldline": {
+      "command": "node",
+      "args": ["core/mcp/server.mjs"]
+    }
+  }
+}
