@@ -31,7 +31,7 @@ Foldline is a project by Alireza Toghiani, built for the Unfold channel. It isn'
 
 lemo's original README is kept as [`LEMO-README.md`](LEMO-README.md). It has the style list, how to make a style your own, and the full requirements.
 
-What Foldline adds is a faster video renderer, `core/render/video.mjs`.
+What Foldline adds is a faster video renderer, `core/render/video.mjs`, and an MCP server for coding agents, `core/mcp/server.mjs`.
 
 ## What's new vs lemo-opuscar
 
@@ -42,6 +42,7 @@ What Foldline adds is a faster video renderer, `core/render/video.mjs`.
 - **`FOLDLINE_MBPS`** sets the bitrate for the WebCodecs path, in Mbit/s (default 20).
 - **New flag `--audio <file>`** muxes a sound file in (AAC 192k). It runs as a second ffmpeg pass from the finished mp4. The renderer refuses to finish if the file is missing its video or audio stream.
 - **Output** is standard bt709 limited-range H.264 mp4.
+- **MCP server** in `core/mcp/`: agents get the styles, guides, renders and sound tools as MCP tools with short results. See [MCP server](#mcp-server).
 
 Everything else in the library works the way lemo describes it.
 
@@ -166,6 +167,31 @@ For the fast path, draw the whole film into one visible `<canvas id="c">` of the
 
 lemo's plugin and skill are for Claude Code. How to install them, and how to ask for a film, is in [`LEMO-README.md`, How to use](LEMO-README.md#how-to-use). The plugin installs lemo's own library into `~/lemo-opuscar`. lemo's setup script uses the clone you're standing in when it's a library, so to work with Foldline's renderer, start your agent inside this folder (lemo's "clone the repo" option).
 
+### MCP server
+
+Foldline has an MCP server, so Claude Code, Cursor, Codex and other agents can call its tools directly instead of reading the guides and running commands by hand. Add it once:
+
+```sh
+claude mcp add --scope user foldline -- node /path/to/foldline/core/mcp/server.mjs
+```
+
+Other clients take the same command in their MCP settings. Inside this folder, Claude Code finds it on its own through `.mcp.json`.
+
+| Tool | What it does |
+|---|---|
+| `find_styles` | search the 66 styles, one short line each |
+| `get_style` | a style's prompt (`STYLE.md`), optionally with how its demo was made |
+| `read_guide` | a guide's table of contents, or one section of it |
+| `render_stills` | review stills, optionally as one contact sheet image |
+| `render_video` | the full render; returns only the done line (path, frames, time, encoder) |
+| `check_reading` | on-screen text timing; returns only the failures |
+| `export_events` | the page's sound cues to JSON |
+| `make_voice`, `check_voice` | Kokoro or Edge TTS, then a Whisper check |
+| `mux_audio` | mix under the video, mastered to -14 LUFS |
+| `make_subtitles` | an `.srt` from cues |
+
+It's built to save tokens. Results are short, a guide comes one section at a time, and renders don't stream their progress log into the chat. Renders run at low priority (`nice`). The voice, sheet and subtitle tools use Python from `FOLDLINE_PYTHON`, the library's `.venv` or `~/lemo-opuscar/.venv`, in that order.
+
 ## Results
 
 Measured on an M1 Pro with 16 GB, nothing else running, Nov 6 2026.
@@ -253,10 +279,10 @@ Not to the eye. The old and new long video differ by 42.3 dB on average (lowest 
 Yes. `--audio my-film/mix.wav` muxes the file in as AAC 192k. The renderer refuses to finish if the result is missing its video or audio stream.
 
 **What is lemo-opuscar?**
-[lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) is LemoLab's open library of film styles made in code, for Claude Code. Each of the 66 styles has a style prompt and a demo film drawn entirely in code, with no video model. Foldline includes all of it. Only the video renderer changed (see [`NOTICE.md`](NOTICE.md)).
+[lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) is LemoLab's open library of film styles made in code, for Claude Code. Each of the 66 styles has a style prompt and a demo film drawn entirely in code, with no video model. Foldline includes all of it. Foldline changed the video renderer and added an MCP server (see [`NOTICE.md`](NOTICE.md)).
 
 **Can I use it with Claude Code or another coding agent?**
-Yes. lemo's Claude Code plugin is in `plugin/`, and agents that read [`AGENTS.md`](AGENTS.md) get the same guide. Start the agent inside this folder so it uses Foldline's renderer. Details are in [Using it with a coding agent](#using-it-with-a-coding-agent).
+Yes. lemo's Claude Code plugin is in `plugin/`, and agents that read [`AGENTS.md`](AGENTS.md) get the same guide. Start the agent inside this folder so it uses Foldline's renderer. Details are in [Using it with a coding agent](#using-it-with-a-coding-agent). Any agent that speaks MCP can also use the [MCP server](#mcp-server).
 
 **Is it free?**
 Yes, for anything non-commercial: personal projects, learning, research, hobby films and open work you don't get paid for. You can read, change and share the code in public. It needs only free tools: Node, ffmpeg and Chrome's headless shell.

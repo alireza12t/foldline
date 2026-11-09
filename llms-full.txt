@@ -123,6 +123,14 @@ Stills for review: `node core/render/still.mjs <dir> 3 20 --out <dir>` writes JP
 | `FOLDLINE_MBPS` | 20 | bitrate in Mbit/s for the WebCodecs path |
 | `LEMO_VTQ` | 72 | quality for the VideoToolbox screenshot path |
 
+## MCP server
+
+`core/mcp/server.mjs` is a stdio MCP server. Add it with `claude mcp add --scope user foldline -- node /path/to/foldline/core/mcp/server.mjs` (other clients take the same command). Inside the repo, `.mcp.json` registers it for Claude Code.
+
+Tools: `find_styles` (search the 66 styles), `get_style` (a style prompt), `read_guide` (table of contents, or one section of AGENTS, DIRECTOR, TECHNIQUE, MY-STYLES, the tool reference and others), `render_stills` (JPEGs, optionally one contact sheet image), `render_video` (full render, returns only the done line), `check_reading` (text timing, failures only), `export_events`, `make_voice` (Kokoro or Edge TTS), `check_voice` (Whisper), `mux_audio` (-14 LUFS master), `make_subtitles` (.srt).
+
+Results are short so agents spend fewer tokens. Renders run under `nice`. Python tools use `FOLDLINE_PYTHON`, then `.venv`, then `~/lemo-opuscar/.venv`.
+
 ## Results
 
 Measured on an M1 Pro with 16 GB, nothing else running, Nov 6 2026.
@@ -174,7 +182,7 @@ Q: Can I add sound?
 A: Yes. `--audio my-film/mix.wav` muxes the file in as AAC 192k. The renderer refuses to finish if the result is missing its video or audio stream.
 
 Q: What is lemo-opuscar?
-A: lemo-opuscar (https://github.com/lemomo-ai/lemo-opuscar) is LemoLab's open library of film styles made in code, for Claude Code. Each of the 66 styles has a style prompt and a demo film drawn entirely in code, with no video model. Foldline includes all of it. Only the video renderer changed.
+A: lemo-opuscar (https://github.com/lemomo-ai/lemo-opuscar) is LemoLab's open library of film styles made in code, for Claude Code. Each of the 66 styles has a style prompt and a demo film drawn entirely in code, with no video model. Foldline includes all of it. Foldline changed the video renderer and added an MCP server.
 
 Q: Can I use it with Claude Code or another coding agent?
 A: Yes. lemo's Claude Code plugin is in `plugin/`, and agents that read `AGENTS.md` get the same guide. Start the agent inside the Foldline folder so it uses Foldline's renderer.
