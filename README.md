@@ -173,7 +173,7 @@ Foldline has an MCP server, so Claude Code, Codex, Cursor and other agents can c
 
 You need Node 20+, ffmpeg (`brew install ffmpeg`) and Chrome's headless shell, installed once with `npx playwright-core@1.63.0 install chromium-headless-shell`. The server tells you if one is missing.
 
-**Claude Code**, as a plugin:
+**Claude Code**, as a plugin (the MCP server plus a Foldline skill):
 
 ```sh
 claude plugin install foldline --marketplace alireza12t/foldline
