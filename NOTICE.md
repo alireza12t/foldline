@@ -17,7 +17,7 @@ The demo films and their stills (in `styles/`, the gallery and the releases) are
 
 ## What we changed
 
-- `core/render/video.mjs`: in-page WebCodecs hardware H.264 encoding as the default path, VideoToolbox and x264 fallbacks, an `--audio` option, and a check of the output stream.
+- `core/render/video.mjs`: in-page WebCodecs hardware H.264 encoding as the default path, VideoToolbox and x264 fallbacks, an `--audio` option that never cuts the picture to the sound, and a check of the finished file (streams, decoded frame count, soundtrack start and end) in `core/render/output.mjs`, also run by `mux.sh`.
 - `core/mcp/server.mjs`: an MCP server that wraps the tools for coding agents.
 - The package is renamed to `foldline`.
 

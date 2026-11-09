@@ -208,6 +208,7 @@ server.registerTool('render_stills', {
 server.registerTool('render_video', {
   title: 'Render the film to MP4',
   description: 'Renders every frame of a film to an H.264 MP4 at low priority, with the in-page hardware encoder by default. ' +
+    'Before saving, it checks the file: every rendered frame decodes and the soundtrack runs from the start to the end of the film; a short or misaligned file fails. ' +
     'Returns the output path, frame count, time and encoder (enc=wc is the fast path), not the progress log. Sends progress if the client asks for it.',
   inputSchema: {
     demo: demoSchema,
@@ -215,13 +216,15 @@ server.registerTool('render_video', {
     fps: z.number().positive().optional().describe('Default 24.'),
     workers: z.number().int().min(1).max(6).optional().describe('Parallel browser workers. Default 3.'),
     size: sizeSchema, q: qSchema,
-    audio: z.string().optional().describe('Sound file to mux in (AAC 192k). For a mastered mix use mux_audio instead.'),
+    audio: z.string().optional().describe('Sound file to mux in (AAC 192k). A soundtrack shorter than the film is padded with silence; a longer one is cut at the end. For a mastered mix use mux_audio instead.'),
+    allow_short_audio: z.boolean().optional().describe('Set true only when the soundtrack is meant to end before the film: it is then left short instead of padded. Default false.'),
     encoder: z.enum(['auto', 'wc', 'vt', 'x264']).optional().describe('auto (default) tries WebCodecs, then VideoToolbox, then x264.'),
     mbps: z.number().positive().optional().describe('Bitrate for the WebCodecs path. Default 20.'),
   },
-}, async ({ demo, out, fps, workers, size, q, audio, encoder, mbps }, extra) => {
+}, async ({ demo, out, fps, workers, size, q, audio, allow_short_audio, encoder, mbps }, extra) => {
   const args = ['core/render/video.mjs', abs(demo), ...(out ? ['--out', abs(out)] : []), ...(fps ? ['--fps', String(fps)] : []),
-    ...(workers ? ['--workers', String(workers)] : []), ...sizeArgs(size, q), ...(audio ? ['--audio', abs(audio)] : [])];
+    ...(workers ? ['--workers', String(workers)] : []), ...sizeArgs(size, q), ...(audio ? ['--audio', abs(audio)] : []),
+    ...(audio && allow_short_audio ? ['--allow-short-audio'] : [])];
   const env = { ...(encoder ? { FOLDLINE_ENC: encoder } : {}), ...(mbps ? { FOLDLINE_MBPS: String(mbps) } : {}) };
   const report = progress(extra), per = {};
   const r = await run('node', args, {
@@ -235,7 +238,7 @@ server.registerTool('render_video', {
   });
   const done = r.lines.find(l => l.startsWith('done '));
   if (r.code || !done) return fail(`video.mjs failed (exit ${r.code}):\n${tail(r.lines)}`);
-  const notes = r.lines.filter(l => /fall|warn|optional file missing/i.test(l));
+  const notes = r.lines.filter(l => /fall|warn|optional file missing|the audio \(/i.test(l));
   return text(done + (notes.length ? `\n${notes.slice(0, 3).join('\n')}${notes.length > 3 ? `\n(+${notes.length - 3} more notes like these)` : ''}` : ''));
 });
 
@@ -314,7 +317,8 @@ server.registerTool('check_voice', {
 
 server.registerTool('mux_audio', {
   title: 'Mux and master sound',
-  description: 'Puts a mix under the video: two-pass loudness to -14 LUFS, true peak -1.2 dB, optional film grain. Returns the output path and the measured loudness.',
+  description: 'Puts a mix under the video: two-pass loudness to -14 LUFS, true peak -1.2 dB, optional film grain. A mix shorter than the video is padded with silence, a longer one cut at the end. ' +
+    'Before handing over, it checks the frame count and that the sound starts and ends with the picture. Returns the output path and the measured loudness.',
   inputSchema: {
     video: z.string(), audio: z.string().describe('The mix, e.g. mix.wav.'), out: z.string(),
     fps: z.number().positive().optional().describe('Default 24.'),

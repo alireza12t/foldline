@@ -40,7 +40,8 @@ What Foldline adds is a faster video renderer, `core/render/video.mjs`, and an M
 - **Automatic fallback.** If the page doesn't fit that, or the browser has no hardware H.264 encoder, it falls back to the screenshot path with the Mac hardware encoder (VideoToolbox). If that isn't available either, it uses x264.
 - **`FOLDLINE_ENC=auto|wc|vt|x264`** picks the encoder. `auto` is the default. `x264` is lemo's original path. `LEMO_ENC` still works.
 - **`FOLDLINE_MBPS`** sets the bitrate for the WebCodecs path, in Mbit/s (default 20).
-- **New flag `--audio <file>`** muxes a sound file in (AAC 192k). It runs as a second ffmpeg pass from the finished mp4. The renderer refuses to finish if the file is missing its video or audio stream.
+- **New flag `--audio <file>`** muxes a sound file in (AAC 192k). It runs as a second ffmpeg pass from the finished mp4. The picture is never cut to the sound: a soundtrack shorter than the film is padded with silence to the end, and a longer one is cut at the end. Add `--allow-short-audio` when the sound is meant to stop early.
+- **The finished file is checked before it's saved**, not just for which streams it has: every rendered frame must decode (one frame of slack), the picture must run from 0 to the film's length, and the soundtrack must start with it and end with it (or before it, with `--allow-short-audio`). A file that ends early, after a missing chunk or a muxing mistake, fails the render and isn't saved.
 - **Output** is standard bt709 limited-range H.264 mp4.
 - **MCP server** in `core/mcp/`: agents get the styles, guides, renders and sound tools as MCP tools with short results. See [MCP server](#mcp-server).
 
@@ -140,6 +141,7 @@ This writes review JPEGs at 3 s and 20 s. See [`core/README.md`](core/README.md)
 | `--out` | `<demo>/out/video.mp4` | output file; each parallel render needs its own |
 | `--q 'k=v&…'` | none | reaches the page as `location.search` |
 | `--audio <file>` | none | mux a sound file in (AAC 192k); new in Foldline |
+| `--allow-short-audio` | off | with `--audio`: let a soundtrack shorter than the film end early instead of padding it with silence |
 
 ### Environment variables
 
@@ -307,7 +309,7 @@ For the fast path, yes: one visible `<canvas id="c">` of the render size, and no
 Not to the eye. The old and new long video differ by 42.3 dB on average (lowest frame 39.6 dB). Output is standard bt709 limited-range H.264 mp4.
 
 **Can I add sound?**
-Yes. `--audio my-film/mix.wav` muxes the file in as AAC 192k. The renderer refuses to finish if the result is missing its video or audio stream.
+Yes. `--audio my-film/mix.wav` muxes the file in as AAC 192k. A shorter mix is padded with silence, never used to cut the picture; pass `--allow-short-audio` if it's meant to end early. Before saving, the renderer decodes the result and refuses it if it's missing a stream, has fewer frames than were rendered, or its sound doesn't line up with the start and end of the film.
 
 **What is lemo-opuscar?**
 [lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) is LemoLab's open library of film styles made in code, for Claude Code. Each of the 66 styles has a style prompt and a demo film drawn entirely in code, with no video model. Foldline includes all of it. Foldline changed the video renderer and added an MCP server (see [`NOTICE.md`](NOTICE.md)).

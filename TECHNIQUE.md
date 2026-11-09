@@ -113,7 +113,7 @@ Write an original score from the cue map, in the instruments of the style's soun
 ## 6. Sound effects and mix
 
 - `core/audio/sfx.py` synthesises foley procedurally (click, whoosh, thump, ding, paper, noise beds…) with filters, envelopes and `add(buffer, sound, at, gain, pan)`. Drive it from `window.EV`, so every sound sits exactly on its frame.
-- **Master**: `sh core/render/mux.sh video.mp4 mix.wav out.mp4 24 [grain]` muxes, runs a two-pass loudnorm to −14 LUFS with a true-peak limit, adds grain in ffmpeg and prints the measured loudness; it exits non-zero on any failure. On light backgrounds use less grain; for pixel and vector styles, none.
+- **Master**: `sh core/render/mux.sh video.mp4 mix.wav out.mp4 24 [grain]` muxes, runs a two-pass loudnorm to −14 LUFS with a true-peak limit, adds grain in ffmpeg and prints the measured loudness; it exits non-zero on any failure, including a written film whose decoded frames or sound don't cover the picture's full length. On light backgrounds use less grain; for pixel and vector styles, none.
 - Films with grain baked into the picture compress badly; re-encode with `-tune grain` and a higher CRF.
 
 ## 7. Subtitles

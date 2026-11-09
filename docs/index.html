@@ -149,7 +149,7 @@ window.READY = true;               // set once fonts and assets are loaded</code
 <h3>Does my page have to be a single canvas?</h3>
 <p>For the fast path, yes. Any other page (DOM elements, SVG, several canvases) still renders, through the screenshot path. 35 of the 66 lemo demos fit the fast path.</p>
 <h3>Can I add sound?</h3>
-<p>Yes. <code>--audio mix.wav</code> muxes the file in as AAC 192k.</p>
+<p>Yes. <code>--audio mix.wav</code> muxes the file in as AAC 192k. A shorter mix is padded with silence, never used to cut the picture; pass <code>--allow-short-audio</code> if it's meant to end early. Before saving, the renderer decodes the result and refuses it if it's missing a stream, has fewer frames than were rendered, or its sound doesn't line up with the start and end of the film.</p>
 <h3>What is lemo-opuscar?</h3>
 <p><a href="https://github.com/lemomo-ai/lemo-opuscar">lemo-opuscar</a> is LemoLab's open library of film styles made in code, for Claude Code. Each of the 66 styles has a style prompt and a demo film drawn entirely in code. Foldline includes all of it. Only the video renderer changed.</p>
 <h3>Is it free?</h3>

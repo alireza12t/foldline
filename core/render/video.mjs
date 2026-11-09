@@ -1,5 +1,8 @@
-// Render video: node core/render/video.mjs <demo> [--fps 24] [--workers 3] [--q 'k=v'] [--out <demo>/out/video.mp4] [--size 1920x1080] [--audio mix.wav]
+// Render video: node core/render/video.mjs <demo> [--fps 24] [--workers 3] [--q 'k=v'] [--out <demo>/out/video.mp4] [--size 1920x1080] [--audio mix.wav [--allow-short-audio]]
 // Foldline: by default the page encodes H.264 itself (WebCodecs on the Mac's hardware encoder), see "Encoder" below. --audio muxes a sound file in (AAC 192k).
+// The picture is never cut to the sound: a shorter soundtrack is padded with silence to the film's end, unless --allow-short-audio says it's meant to end early; a longer one is cut at the end.
+// Before handing the file over, output.mjs checks it: every rendered frame decodes (one frame of slack), the picture runs 0 to DUR, and the soundtrack starts with it and ends with it
+// (or before it, with --allow-short-audio). Any miss fails the render and leaves no file.
 // when several films are in production in parallel, use 3 workers (the default); a render on its own can go up to 6
 // each worker has its own browser; JPEG screenshots are piped to ffmpeg; the segments are joined losslessly at the end
 // with the environment variable RENDER_SLOTS (an integer) set, the machine runs at most that many full-film renders at once (slot.mjs); unset means no limit. Segment files go in a hidden directory next to --out, unique to each render, deleted when the render finishes (or fails, or is interrupted).
@@ -7,9 +10,10 @@
 // <out>.lock holds the owner's pid; if the owner is gone, or the lock file hasn't been refreshed for over 12 hours (the pid was reused by another process), it counts as stale and a new render takes over.
 import fs from 'fs'; import path from 'path'; import { spawn, execFileSync } from 'child_process';
 import { openDemo, closeServer, requireDemo, takeSize } from './page.mjs';
+import { checkOutput, audioPassArgs, mediaDuration } from './output.mjs';
 const args = process.argv.slice(2), { w: W, h: H } = takeSize(args), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const dir = args[0]; requireDemo(dir);
-const FPS = +opt('--fps', 24), WK = +opt('--workers', 3), Q = opt('--q', ''), AUDIO = opt('--audio', '');
+const FPS = +opt('--fps', 24), WK = +opt('--workers', 3), Q = opt('--q', ''), AUDIO = opt('--audio', ''), ALLOW_SHORT = args.includes('--allow-short-audio');
 if (AUDIO && !fs.existsSync(AUDIO)) { console.error(`--audio file not found: ${AUDIO}`); process.exit(2); }
 if (!(FPS > 0) || !Number.isInteger(WK) || WK < 1) { console.error('bad --fps / --workers: fps must be > 0, workers an integer ≥ 1'); process.exit(2); }
 const out = path.resolve(opt('--out', path.join(dir, 'out', 'video.mp4')));
@@ -112,7 +116,7 @@ try { await Promise.all([...Array(WK)].map(async (_, w) => {
   if (dead || code !== 0) fail(`ffmpeg failed for worker ${w}: ${dead || 'exit code ' + code} (ffmpeg's own message, if any, is above)`);
 })); } catch (e) { fail(`render stopped: ${String(e.message || e).split('\n')[0]}`); }   // e.g. the page's render(t) threw
 if (WC) {   // raw H.264 segments join by plain concatenation, then get wrapped (video only, like the other paths); -r gives the frame timing; transfer tagged bt709 (Chrome writes sRGB).
-  // Add audio in a SECOND ffmpeg run from this mp4, never straight from the raw .h264: raw H.264 has no timestamps and -shortest then drops the audio.
+  // Add audio in a SECOND ffmpeg run from this mp4, never straight from the raw .h264: raw H.264 has no timestamps and the audio pass then drops the audio.
   fs.writeFileSync(path.join(segDir, 'all.h264'), Buffer.concat([...Array(WK)].map((_, w) => w).filter(w => w * per < TOTAL).map(w => fs.readFileSync(path.join(segDir, `seg_${w}.h264`)))));
   try { execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-r', String(FPS), '-f', 'h264', '-i', 'all.h264', '-c', 'copy', '-bsf:v', 'h264_metadata=transfer_characteristics=1',
     '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-movflags', '+faststart', 'merged.mp4'], { cwd: segDir, stdio: ['ignore', 'inherit', 'inherit'] }); }
@@ -123,16 +127,17 @@ fs.writeFileSync(list, [...Array(WK)].map((_, w) => `file 'seg_${w}.mp4'`).filte
 try { execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', 'segs.txt', '-c', 'copy', 'merged.mp4'], { cwd: segDir, stdio: ['ignore', 'inherit', 'inherit'] }); }
 catch { fail('ffmpeg could not join the segments (its message is above)'); }
 }
-if (AUDIO) {   // second run from the finished mp4 (never from raw .h264: without timestamps, -shortest drops the audio)
+if (AUDIO) {   // second run from the finished mp4 (never from raw .h264: without timestamps the audio gets dropped). Length is the film's (-t), never -shortest, which would cut the picture to a short soundtrack
   fs.copyFileSync(path.resolve(AUDIO), path.join(segDir, 'audio.in'));
-  try { execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', 'merged.mp4', '-i', 'audio.in', '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', 'final.mp4'],
-    { cwd: segDir, stdio: ['ignore', 'inherit', 'inherit'] }); fs.renameSync(path.join(segDir, 'final.mp4'), path.join(segDir, 'merged.mp4')); }
+  const { args: aa, note } = audioPassArgs({ video: 'merged.mp4', audio: 'audio.in', out: 'final.mp4', dur: TOTAL / FPS, fps: FPS, allowShort: ALLOW_SHORT, audioDur: mediaDuration(path.join(segDir, 'audio.in')) });
+  if (note) console.error(`[${note.replace(/^note: /, 'note] ')}`);
+  try { execFileSync('ffmpeg', aa, { cwd: segDir, stdio: ['ignore', 'inherit', 'inherit'] }); fs.renameSync(path.join(segDir, 'final.mp4'), path.join(segDir, 'merged.mp4')); }
   catch { fail('ffmpeg could not add the audio (its message is above)'); }
 }
-{ const st = execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'stream=codec_type', '-of', 'csv=p=0', 'merged.mp4'], { cwd: segDir, encoding: 'utf8' }).split('\n').map(l => l.split(',')[0].trim()).filter(Boolean);   // ffprobe may print 'video,' (extra columns)
-  if (!st.includes('video') || (AUDIO && !st.includes('audio'))) fail(`the finished file is missing a stream (has: ${st.join(', ') || 'nothing'})`); }   // never hand over a silent or empty video
+{ const bad = checkOutput(path.join(segDir, 'merged.mp4'), { frames: TOTAL, fps: FPS, audio: !AUDIO ? 'none' : ALLOW_SHORT ? 'short' : 'full' });   // never hand over a silent, empty or short video
+  if (bad.length) fail(`the finished file doesn't match the render (${TOTAL} frames at ${FPS} fps), so it was not saved:\n  ${bad.join('\n  ')}`); }
 fs.renameSync(path.join(segDir, 'merged.mp4'), out);   // any characters in the final filename are fine: it doesn't go through ffmpeg
 cleanup(); release();
 const secs = (Date.now() - t0) / 1000;
-console.log('done', out, TOTAL, 'frames', secs.toFixed(0) + 's', `(${(TOTAL / secs).toFixed(0)} fps)`, 'enc=' + ENC + (AUDIO ? ' +audio' : ''));
+console.log('done', out, TOTAL, 'frames', secs.toFixed(0) + 's', `(${(TOTAL / secs).toFixed(0)} fps)`, 'enc=' + ENC + (AUDIO ? ' +audio' + (ALLOW_SHORT ? ' (short allowed)' : '') : ''));
 closeServer();

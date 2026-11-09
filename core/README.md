@@ -32,7 +32,8 @@ The viewport is 1920×1080 at device scale 1, or `--size WxH`. `--q 'k=v&…'` r
 | Command | What it does |
 |---|---|
 | `node core/render/still.mjs <demo> <t> [<t> …] [--range a:b:step] [--prefix t_] [--out dir]` | review stills as JPEGs (default `<demo>/stills/t_<t>.jpg`) |
-| `node core/render/video.mjs <demo> [--fps 24] [--workers 3] [--out <demo>/out/video.mp4]` | every frame to a video; up to 6 workers for a single render. Each parallel version needs its own `--out` |
+| `node core/render/video.mjs <demo> [--fps 24] [--workers 3] [--out <demo>/out/video.mp4] [--audio mix.wav [--allow-short-audio]]` | every frame to a video; up to 6 workers for a single render. Each parallel version needs its own `--out`. The finished file is checked before it's saved (below) |
+| `node core/render/output.mjs check <file.mp4> --fps 24 (--frames N \| --duration S) [--audio full\|short\|none]` | the finished-file check on its own (below) |
 | `node core/render/events.mjs <demo> [--out <file>]` | export `{dur, ev}` to `<demo>/events.json` |
 | `node core/render/readcheck.mjs <demo> [--step 0.04] [--latin-cps 15] [--cjk-cps 4.5] [--pad 1.5] [--min 1.5]` | reading-time check (below) |
 | `.venv/bin/python core/render/sheet.py out.jpg img… [--cols 4] [--w 480]` | contact sheet |
@@ -43,7 +44,9 @@ All four page tools take `--size WxH` (default `1920x1080`, even numbers) and `-
 
 **readcheck** asks the page for `window.TEXTS(t)` at every step. Each text must stay fully in frame, unchanged, for at least CJK characters ÷ 4.5 + other non-space characters ÷ 15 + 1.5 s, and never less than `--min`. A new `text` under the same `id` starts a new piece. Subtitles are checked by their `.srt`, not here.
 
-**mux** runs a two-pass `loudnorm` to −14 LUFS / true peak −1.2 dB, adds film grain (`grain` 0 = none) and prints the measured loudness. Silent audio is left at its level with a warning; short audio is padded, long audio cut at the picture's end; missing, damaged or truncated audio is refused. It never leaves a partial file.
+**mux** runs a two-pass `loudnorm` to −14 LUFS / true peak −1.2 dB, adds film grain (`grain` 0 = none) and prints the measured loudness. Silent audio is left at its level with a warning; short audio is padded, long audio cut at the picture's end; missing, damaged or truncated audio is refused. It never leaves a partial file, and it checks the written film the same way as the renderer (below).
+
+**The finished-file check** (`output.mjs`, run by `video.mjs` and `mux.sh` before they hand a file over) doesn't stop at which streams exist. A file can hold a video and an audio stream and still end early. So it decodes the picture and counts its frames against what was rendered (one frame of slack), checks that the picture runs from 0 to the film's length, and that the soundtrack starts with the picture and ends with it. A soundtrack is never allowed to cut the picture (no `-shortest`): one that's shorter is padded with silence, unless `video.mjs` got `--allow-short-audio` (MCP: `allow_short_audio`), which lets it end early but never late. A file that fails isn't saved. Decoding takes about 2 s per minute of 1080p. Tests: `npm test`.
 
 ## Audio
 

@@ -11,9 +11,12 @@
 #   · the WAV header declares more audio than the file actually holds (interrupted halfway through writing).
 #   A WAV streamed out by `ffmpeg … -f wav -` has a placeholder length in its header and decodes completely, but ends with three demuxer notices: that's a good file and the film is made as usual (with a one-line note).
 #   One case it can't detect: a streamed WAV truncated exactly on a sample boundary (no header length to compare, and decoding shows no error).
-# Audio shorter than the picture: padded with silence to the picture's length (the video is never cut short); audio longer: cut to the picture's length as before (-shortest).
+# Audio shorter than the picture: padded with silence to the picture's length (the video is never cut short); audio longer: cut at the picture's end. The output length is the picture's (-t), never -shortest.
+# Before the path is printed, core/render/output.mjs checks the written film: its decoded frame count matches the picture's length at the target fps (one frame of slack),
+#   and the sound starts with the picture and ends with it. A file that fails is removed and mux.sh exits 1.
 # Colour: by default exactly as before (keeps the yuvj420p full range / bt470bg tags that video.mjs outputs); LEMO_COLOR=bt709 switches to standard yuv420p limited range / bt709 (picture values differ by ±3 at most, but there's a slight colour difference from older films).
 die() { echo "mux.sh: $*" >&2; exit 1; }
+HERE=$(dirname "$0")
 V="$1"; A="$2"; O="$3"; FPS="${4:-24}"; GR="${5:-2}"
 [ -n "$V" ] && [ -n "$A" ] && [ -n "$O" ] || die "usage: sh core/render/mux.sh video.mp4 mix.wav out.mp4 [fps=24] [grain=2]"
 [ -f "$V" ] || die "video not found: $V"
@@ -70,7 +73,11 @@ fi
 
 # pad with silence if the audio is shorter than the picture
 dur() { ffprobe -v error -show_entries format=duration -of csv=p=0 "$1" 2>/dev/null | head -1; }
-VD=$(dur "$V"); AD=$(dur "$A"); PAD=""
+# the picture's own length (the container's can be longer when the video already carries a longer soundtrack); falls back to the container's
+vdur() { _d=$(ffprobe -v error -select_streams v:0 -show_entries stream=duration -of csv=p=0 "$1" 2>/dev/null | head -1)
+  case "$_d" in ''|N/A) dur "$1";; *) echo "$_d";; esac; }
+VD=$(vdur "$V"); AD=$(dur "$A"); PAD=""
+awk -v v="$VD" 'BEGIN { exit !(v + 0 > 0) }' || die "cannot read the length of the video '$V'"
 if awk -v a="$AD" -v v="$VD" 'BEGIN { exit !(a + 0 > 0 && v + 0 > 0 && a + 0 < v - 0.02) }'; then
   PAD=",apad=whole_dur=$VD"
   echo "mux.sh: note: the audio ($AD s) is shorter than the video ($VD s); padding it with silence" >&2
@@ -86,9 +93,12 @@ fi
 # shellcheck disable=SC2086  (CARGS must split on spaces into several arguments; empty by default)
 ffmpeg -y -loglevel error -i "$V" -i "$A" \
   -filter_complex "[0:v]$VF[v];[1:a]$LN,aresample=48000$PAD[a]" \
-  -map "[v]" -map "[a]" -c:v libx264 -preset slow -crf 19 -r "$FPS" $CARGS -c:a aac -b:a 256k -movflags +faststart -shortest "$O" \
+  -map "[v]" -map "[a]" -c:v libx264 -preset slow -crf 19 -r "$FPS" $CARGS -c:a aac -b:a 256k -movflags +faststart -t "$VD" "$O" \
   || { rm -f "$O"; die "ffmpeg failed while writing '$O' (its message is above)"; }
 [ -s "$O" ] || { rm -f "$O"; die "no output was written to '$O'"; }
+CHK=$(node "$HERE/output.mjs" check "$O" --fps "$FPS" --duration "$VD" --audio full 2>&1) \
+  || { rm -f "$O"; die "the written film doesn't match the picture ($VD s at $FPS fps), so it was removed:
+$CHK"; }
 echo "$O"
 R=$(ffmpeg -hide_banner -nostats -i "$O" -af ebur128=peak=true -f null - 2>&1 | grep -E "^\s+(I|LRA|Peak):" | head -3)
 echo "$R"
