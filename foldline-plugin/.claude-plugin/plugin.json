@@ -1,0 +1,10 @@
+{
+  "name": "foldline",
+  "displayName": "Foldline",
+  "description": "Render HTML canvas animations to MP4 fast on a Mac, and make films in 66 code-made styles. Adds the Foldline MCP server: styles, guides, stills, renders, voice and sound mastering.",
+  "author": { "name": "Alireza Toghiani", "url": "https://github.com/alireza12t" },
+  "homepage": "https://alireza12t.github.io/foldline/",
+  "repository": "https://github.com/alireza12t/foldline",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "keywords": ["video", "animation", "canvas", "mp4", "mcp", "webcodecs"]
+}

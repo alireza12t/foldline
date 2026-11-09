@@ -1,13 +1,18 @@
 {
-  "name": "lemolab",
+  "name": "foldline",
   "owner": {
-    "name": "Lemomo",
-    "url": "https://github.com/lemomo-ai"
+    "name": "Alireza Toghiani",
+    "url": "https://github.com/alireza12t"
   },
   "metadata": {
-    "description": "LemoLab skills: film styles for coding agents."
+    "description": "Foldline: fast HTML canvas to MP4 rendering on a Mac, plus LemoLab's lemo-opuscar film styles."
   },
   "plugins": [
+    {
+      "name": "foldline",
+      "source": "./foldline-plugin",
+      "description": "The Foldline MCP server: 66 film styles, guides, stills, fast MP4 renders, voice and sound mastering."
+    },
     {
       "name": "lemo-opuscar",
       "source": "./plugin",
