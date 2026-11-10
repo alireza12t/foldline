@@ -11,7 +11,7 @@ Options: --voice ryan  --instruct ""  --batch 16  --retries 3  --no-check  --che
          --model mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-8bit (a Hugging Face repo or a local folder)
 
 What it fixes on top of the plain model:
-  - Cut endings. Qwen3-TTS often picks its end token while the last sound is still loud, so about 1 take in 4 stops
+  - Cut endings. Qwen3-TTS often picks its end token while the last sound is still loud, so 1 take in 4 to 7 stops
     mid-sound. Every take makes one more frame after the model's first end attempt (qwen_batch.py, eos_hold), and
     gets a 10 ms fade at the end.
   - Numbers. Digits are read one token at a time and the reading is guessed (years come out wrong or rushed), so
