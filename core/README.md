@@ -10,6 +10,7 @@ Command reference for `core/` and `tools/`. How the pieces fit together is in [`
 | `… setup.sh deps` | core tier: npm packages, headless browser, `.venv` from `requirements.txt` |
 | `… setup.sh deps voice` | adds `requirements-voice.txt` (kokoro-onnx, edge-tts, faster-whisper) and the Kokoro model |
 | `… setup.sh deps music` | adds `requirements-music.txt` (numba, for `pluck.py`; `sampler.py` needs only the core) |
+| `… setup.sh deps qwen` | adds `requirements-qwen.txt` (mlx-audio, faster-whisper) for `tts_qwen.py`; Mac with Apple silicon. The model downloads on first use |
 | `… setup.sh demo <slug>` | adds one style's demo source and poster (to read, not to render) |
 | `sh tools/fetch.sh voice` \| `hdri` \| `instruments <lib>` \| `instruments all` | Kokoro model · HDRIs · a sample library (`freepats`, `karoryfer`, `salamander`, `vcsl`, `vsco2ce`) |
 
@@ -54,6 +55,7 @@ All four page tools take `--size WxH` (default `1920x1080`, even numbers) and `-
 |---|---|
 | `.venv/bin/python core/tts/tts.py lines.json out_dir` | Kokoro, offline. `lines.json` = `[{id, text, voice?, speed?, lang?}]` (defaults `af_bella`, `0.92`, `en-us`; Chinese: `"lang": "cmn"`, a `zf_*`/`zm_*` voice). Writes `<id>.wav` (24 kHz, trimmed) and `dur.json`. Needs a library path under 160 bytes (espeak-ng); it checks |
 | `.venv/bin/python core/tts/tts_zh.py lines.json out_dir [--voice zh-CN-XiaoxiaoNeural] [--rate +0%] [--pitch +0Hz]` | edge-tts (Microsoft), online; same outputs as `tts.py`. Per line: `voice`, `rate`, `pitch`, `say` (what is spoken when it differs from `text`). Caches in `out_dir/.cache/`. Voices: `.venv/bin/python -m edge_tts --list-voices` |
+| `.venv/bin/python core/tts/tts_qwen.py lines.json out_dir [--voice ryan] [--instruct "…"] [--batch 16] [--retries 3] [--no-check] [--seed N]` | [Qwen3-TTS](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice) on MLX: local, free, Mac with Apple silicon; same outputs as `tts.py` (each take also gets a 10 ms fade at the end). Per line: `voice` (`ryan`, `aiden` for English; `vivian`, `serena`, `uncle_fu`, `dylan`, `eric` Chinese; `ono_anna` Japanese; `sohee` Korean), `instruct` (how to say it, in plain words), `lang` (`english` by default, or `chinese`, `japanese`, `korean`, `german`, `french`, `russian`, `portuguese`, `spanish`, `italian`), `say`, `asr`. English digits are spelled as words first. Every take is checked for a cut end and, in English, by Whisper (numbers, last word, accuracy ≥ 0.85, no rushed number); failing takes are redone up to `--retries` rounds, and a line that still fails keeps its best try and is printed as `STILL FAILING`. The model (`--model`, default `mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-8bit`, about 3.1 GB) downloads on first use; peak memory about 4.5 GB at batch 16 |
 | `.venv/bin/python core/tts/asr_check.py lines.json voices_dir [--lang en\|zh\|auto] [--threshold 0.92] [--model base]` | speech-to-text check of every `<id>.wav`; writes `words.json` (word timestamps). English must match word for word (0–999 count the same as their words); Chinese, Japanese, Korean compare by character similarity ≥ `--threshold`, each number by its value (十九 = 19, 一万九千 = 1.9万, 三点五 = 3.5, 百分之三十 = 30%); a number heard as a different number fails the line. An `asr` field in a line overrides the expected text (names, and in English decimals and times: write it as Whisper does) |
 | `core/audio/sfx.py` | procedural foley and mix helpers: filters, envelopes, `click`, `whoosh`, `thump`, `ding`…, `compress`, `limit`, `add(buf, sound, at, gain, pan)` |
 | `core/audio/sampler.py`, `core/audio/pluck.py` | sampled instruments and plucked-string modelling ([`audio/INSTRUMENTS.md`](audio/INSTRUMENTS.md)). A missing library is named in the error with its `fetch.sh instruments <lib>` command. `credits(names)` writes the CREDITS lines |
@@ -89,4 +91,5 @@ All four page tools take `--size WxH` (default `1920x1080`, even numbers) and `-
 | `mux.sh` | film written | any failure | – |
 | `tts.py`, `srt.py` | done | bad input, missing model, path too long | usage |
 | `tts_zh.py` | done | bad input | network unreachable |
+| `tts_qwen.py` | done (lines still failing the check are printed as `STILL FAILING`) | bad input, not Apple silicon, package or model missing | usage |
 | `asr_check.py` | all lines pass | mismatches | model failed to load |

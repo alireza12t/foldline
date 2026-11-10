@@ -1,0 +1,5 @@
+[
+ {"id": "d1", "voice": "ryan", "instruct": "A warm, clear narrator, natural pace", "text": "This voice was made on a Mac, for free, with Foldline."},
+ {"id": "d2", "voice": "aiden", "instruct": "A curious storyteller, lively but clear", "text": "Engineers at Harvard taped a real moth into a computer's logbook in 1947."},
+ {"id": "d3", "voice": "ryan", "instruct": "A warm, clear narrator, natural pace", "text": "Whisper checks every take, and a line that ends early is made again."}
+]

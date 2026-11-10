@@ -39,6 +39,6 @@ Run every tool from `$LIB`, with the film's absolute path. Voice and music need 
 4. **Review stills:** `node core/render/still.mjs "<film>" 2 10 20` writes JPEGs to look at. Fix what's wrong before a full render.
 5. **Check text timing:** `node core/render/readcheck.mjs "<film>"`.
 6. **Render:** `nice -n 20 node core/render/video.mjs "<film>" --fps 30 --size 1920x1080 --out "<film>/out/video.mp4"`. Use `--size 1080x1920` for a vertical Short. On a Mac the last line should say `enc=wc`.
-7. **Sound:** make voice lines with `core/tts/tts.py` (Kokoro, offline), build the mix, then master it under the picture with `sh core/render/mux.sh "<film>/out/video.mp4" mix.wav "<film>/out/final.mp4"`.
+7. **Sound:** make voice lines with `core/tts/tts.py` (Kokoro, offline), or on a Mac with Apple silicon `core/tts/tts_qwen.py` (Qwen3-TTS, local, an `instruct` per line; install with `setup.sh deps qwen`), build the mix, then master it under the picture with `sh core/render/mux.sh "<film>/out/video.mp4" mix.wav "<film>/out/final.mp4"`.
 
 Tell the user where the final MP4 is. `core/README.md` lists every command and flag.

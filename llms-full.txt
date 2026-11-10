@@ -41,7 +41,7 @@ node node_modules/playwright-core/cli.js install chromium-headless-shell
 
 To use a different Chrome or headless-shell executable, set `PLAYWRIGHT_CHROME=/path/to/chrome-headless-shell`.
 
-Python tools (sound effects, mix, subtitles, voice): `sh plugin/skills/lemo-opuscar/scripts/setup.sh deps` (core), add `voice` for Kokoro, edge-tts, faster-whisper and the Kokoro model, or `music` for numba.
+Python tools (sound effects, mix, subtitles, voice): `sh plugin/skills/lemo-opuscar/scripts/setup.sh deps` (core), add `voice` for Kokoro, edge-tts, faster-whisper and the Kokoro model, `music` for numba, or `qwen` for the Qwen3-TTS voice (Mac with Apple silicon: mlx-audio and faster-whisper; the model, about 3.1 GB, downloads on first use).
 
 ## Smallest working example
 
@@ -129,7 +129,7 @@ Stills for review: `node core/render/still.mjs <dir> 3 20 --out <dir>` writes JP
 
 `core/mcp/server.mjs` is a stdio MCP server, published on npm as `foldline-mcp` and in the MCP Registry as `io.github.alireza12t/foldline`. Claude Code: `claude plugin install foldline --marketplace alireza12t/foldline`, or `claude mcp add --scope user foldline -- npx -y foldline-mcp`. Codex, Cursor, VS Code and Claude Desktop: command `npx`, args `["-y", "foldline-mcp"]`. Needs Node 20+, ffmpeg and Chrome's headless shell (`npx playwright-core@1.63.0 install chromium-headless-shell`). Inside the repo, `.mcp.json` registers a local copy for Claude Code.
 
-Tools: `find_styles` (search the 66 styles), `get_style` (a style prompt), `read_guide` (table of contents, or one section of AGENTS, DIRECTOR, TECHNIQUE, MY-STYLES, the tool reference and others), `render_stills` (JPEGs, optionally one contact sheet image), `render_video` (full render, returns only the done line), `check_reading` (text timing, failures only), `export_events`, `make_voice` (Kokoro or Edge TTS), `check_voice` (Whisper), `mux_audio` (-14 LUFS master), `make_subtitles` (.srt), `fetch_assets` (voice model, HDRIs, instruments).
+Tools: `find_styles` (search the 66 styles), `get_style` (a style prompt), `read_guide` (table of contents, or one section of AGENTS, DIRECTOR, TECHNIQUE, MY-STYLES, the tool reference and others), `render_stills` (JPEGs, optionally one contact sheet image), `render_video` (full render, returns only the done line), `check_reading` (text timing, failures only), `export_events`, `make_voice` (Kokoro, Edge TTS or Qwen3-TTS), `check_voice` (Whisper), `mux_audio` (-14 LUFS master), `make_subtitles` (.srt), `fetch_assets` (voice model, HDRIs, instruments).
 
 Results are short so agents spend fewer tokens. Renders run under `nice`. Python tools use `FOLDLINE_PYTHON`, then `.venv`, then `~/lemo-opuscar/.venv`.
 
@@ -208,7 +208,7 @@ Foldline is a renderer plus a style library, not a framework or a timeline edito
 ## Credits
 
 - LemoLab / lemo-opuscar (https://github.com/lemomo-ai/lemo-opuscar) by Lemomo (@lemomo_ai on X): the whole style library, the toolkit, the guides, the page contract and the render pipeline Foldline builds on.
-- Playwright drives the headless browser. Chromium draws the frames and, through WebCodecs, encodes them. FFmpeg wraps, joins and muxes the video. three.js for the 3D styles. Poly Haven for CC0 HDRIs and models. Kokoro TTS for offline narration. Google Fonts for fonts in the demos.
+- Playwright drives the headless browser. Chromium draws the frames and, through WebCodecs, encodes them. FFmpeg wraps, joins and muxes the video. three.js for the 3D styles. Poly Haven for CC0 HDRIs and models. Kokoro TTS for offline narration. Qwen3-TTS (Apache-2.0) through mlx-audio for the local Qwen voice. Google Fonts for fonts in the demos.
 
 ## Licence
 
