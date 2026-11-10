@@ -71,8 +71,9 @@ def main():
         sys.exit('tts_qwen.py: lines.json must be a list of {"id", "text"} objects, each with an id and some text')
     ids = [str(L['id']) for L in lines]
     if len(set(ids)) < len(ids): sys.exit(f"tts_qwen.py: repeated id(s): {', '.join(sorted({i for i in ids if ids.count(i) > 1}))}")
+    if a.batch < 1 or a.retries < 0: sys.exit('tts_qwen.py: --batch must be 1 or more, --retries 0 or more')
     for L in lines:
-        L['id'] = str(L['id'])
+        L['id'] = str(L['id']); L['text'] = str(L['text'])
         v = L.get('voice') or a.voice; L['_voice'] = (v[0] if isinstance(v, list) else v).lower()
         L['_lang'] = (L.get('lang') or 'english').lower()
         if L['_lang'] not in LANGS: sys.exit(f"tts_qwen.py: line '{L['id']}' has lang '{L['_lang']}'. Qwen3-TTS speaks: {', '.join(LANGS)}")
