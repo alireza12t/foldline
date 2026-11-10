@@ -180,6 +180,8 @@ sh plugin/skills/lemo-opuscar/scripts/setup.sh deps qwen
 
 It writes one trimmed `<id>.wav` per line and `dur.json`, like `tts.py`. The first run downloads the model, `mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-8bit` (about 3.1 GB), and Whisper `small.en` for the check (about 0.5 GB). On an M1 Pro with 16 GB, the three demo lines took 21 s with the model already downloaded, and memory peaked at 4.2 GB.
 
+**Faster and lighter than plain Qwen.** Lines are made together in one batch with the model loaded once, and the model is slimmed for preset voices (8-bit embeddings, a half-precision decoder that runs in small chunks, no voice-cloning encoder). On the same 8 lines and the same Mac, plain mlx-audio Qwen3-TTS (one line at a time) took 22.7 s for 31 s of speech and peaked at 6.5 GB of memory. Foldline took 16.2 s for 38 s of speech and peaked at 4.3 GB: about 1.7x faster per second of speech, with a third less memory. The gain grows with more lines; on a 13-line test it was 2.2x per line.
+
 Each line is `{id, text}` plus any of these:
 
 | Field | Meaning |
