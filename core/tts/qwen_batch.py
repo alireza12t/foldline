@@ -14,7 +14,7 @@ What it does differently from mlx-audio's own batch generation (same model, same
 The end-cut fix (eos_hold): Qwen3-TTS often picks its end token on a frame where the last sound is still loud,
 so the take stops mid-sound. With eos_hold=1, a row that picks the end token for the first time must make one
 more frame first (end token masked). The model fills that frame with silence, so the last sound ends cleanly.
-Measured on 42 takes: 12 cut without it, 0 with it.
+Measured with this code on the base model, 7 lines x 6 takes at batch 16: 6 of 42 cut without it, 0 of 42 with it.
 
 lean(model) lowers memory: 8-bit text and code embeddings, bf16 speech decoder, no speech encoder (the encoder
 is only needed for voice cloning). Peak about 4.5 GB at batch 16 instead of 7.3 GB.
