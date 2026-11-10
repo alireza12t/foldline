@@ -29,7 +29,7 @@ function python() {
   const tries = [process.env.FOLDLINE_PYTHON, path.join(LIB, '.venv/bin/python'),
     path.join(process.env.LEMO_OPUSCAR_HOME || path.join(os.homedir(), 'lemo-opuscar'), '.venv/bin/python')].filter(Boolean);
   const hit = tries.find(p => fs.existsSync(p));
-  if (!hit) throw new Error(`No Python environment found (tried ${tries.join(', ')}). Run "sh plugin/skills/lemo-opuscar/scripts/setup.sh deps" (add "voice" or "music" for those tools), or set FOLDLINE_PYTHON.`);
+  if (!hit) throw new Error(`No Python environment found (tried ${tries.join(', ')}). Run "sh plugin/skills/lemo-opuscar/scripts/setup.sh deps" (add "voice", "qwen" or "music" for those tools), or set FOLDLINE_PYTHON.`);
   return hit;
 }
 
@@ -276,23 +276,30 @@ server.registerTool('export_events', {
 
 server.registerTool('make_voice', {
   title: 'Make voice lines (TTS)',
-  description: 'Turns lines of text into trimmed WAV files and dur.json. engine "kokoro" is offline (default); "edge" is Microsoft Edge TTS, online. ' +
-    'Returns each line\'s duration. Needs the voice tier: setup.sh deps voice.',
+  description: 'Turns lines of text into trimmed WAV files and dur.json. engine "kokoro" is offline (default); "edge" is Microsoft Edge TTS, online; ' +
+    '"qwen" is Qwen3-TTS on MLX (Mac with Apple silicon, local, free; voices ryan, aiden, vivian, serena, uncle_fu, dylan, eric, ono_anna, sohee; ' +
+    'per-line instruct; numbers spelled out; every take checked for a cut end and by Whisper, bad takes redone). ' +
+    'Returns each line\'s duration. Needs the voice tier (setup.sh deps voice), or for qwen the qwen tier (setup.sh deps qwen; the model, about 3.1 GB, downloads on first use).',
   inputSchema: {
     lines: z.array(z.object({
-      id: z.string(), text: z.string(), voice: z.string().optional(), speed: z.number().optional(), lang: z.string().optional(),
-      say: z.string().optional().describe('edge only: what is spoken when it differs from text.'),
+      id: z.string(), text: z.string(), voice: z.string().optional(), speed: z.number().optional().describe('kokoro only.'),
+      lang: z.string().optional().describe('kokoro: en-us, cmn…; qwen: english (default), chinese, japanese, korean, german, french, russian, portuguese, spanish, italian.'),
+      say: z.string().optional().describe('edge and qwen: what is spoken when it differs from text.'),
+      instruct: z.string().optional().describe('qwen only: how to say it, e.g. "warm, clear narrator, natural pace".'),
+      asr: z.string().optional().describe('qwen check and check_voice: what Whisper should hear when it differs.'),
     })).min(1),
     out_dir: z.string().describe('Folder for <id>.wav and dur.json. lines.json is written there too.'),
-    engine: z.enum(['kokoro', 'edge']).optional(),
+    engine: z.enum(['kokoro', 'edge', 'qwen']).optional(),
   },
 }, async ({ lines, out_dir, engine = 'kokoro' }, extra) => {
   let py; try { py = python(); } catch (e) { return fail(e.message); }
   const dir = abs(out_dir); fs.mkdirSync(dir, { recursive: true });
   const lj = path.join(dir, 'lines.json'); fs.writeFileSync(lj, JSON.stringify(lines, null, 1));
-  const r = await run(py, [engine === 'edge' ? 'core/tts/tts_zh.py' : 'core/tts/tts.py', lj, dir], { signal: extra.signal });
+  const script = { edge: 'core/tts/tts_zh.py', qwen: 'core/tts/tts_qwen.py' }[engine] || 'core/tts/tts.py';
+  const r = await run(py, [script, lj, dir], { signal: extra.signal });
   if (r.code) return fail(`TTS failed (exit ${r.code}):\n${tail(r.lines)}`);
-  try { return text(`${dir}\n${JSON.stringify(JSON.parse(fs.readFileSync(path.join(dir, 'dur.json'), 'utf8')))}`); }
+  const notes = r.lines.filter(l => /^(guard:|STILL FAILING|warning:)/.test(l));   // qwen: redo summary and lines that still fail
+  try { return text([dir, JSON.stringify(JSON.parse(fs.readFileSync(path.join(dir, 'dur.json'), 'utf8'))), ...notes].join('\n')); }
   catch { return text(`${dir}\n${tail(r.lines)}`); }
 });
 
