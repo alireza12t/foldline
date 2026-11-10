@@ -7,7 +7,7 @@ A take passes when:
  - no number is rushed: Whisper's word times give how long a spoken number took, and more than 12.5 syllables
    a second means it was swallowed ("1947" said in 0.44 s). Good takes reach 10.9.
 Whisper's written forms are read back as words before comparing: 1947 (cardinal or year, whichever the line uses),
-19th, $5 million, 10%, 3.5, 9:30, 1990s, '90s, and Roman numerals in capitals (GTA VI).
+19th, $5 million, $1.50, 10%, 3.5, 9:30, 10pm, 1990s, '90s, and Roman numerals in capitals (GTA VI).
 
   from take_check import TakeCheck
   check = TakeCheck()                       # faster-whisper small.en on the CPU, int8, 2 threads
@@ -17,7 +17,7 @@ Whisper's written forms are read back as words before comparing: 1947 (cardinal 
 import os, re, sys
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from num_words import card, year, ordinal, num, plural, TENS
+from num_words import card, year, ordinal, num, plural, money, clock, AMPM, TENS
 
 NUM = set('zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen '
           'twenty thirty forty fifty sixty seventy eighty ninety hundred thousand million billion trillion first second third fourth fifth '
@@ -71,8 +71,9 @@ def align(ref, hyp):
 
 
 def spoken(s):
-    """Whisper's written forms back to words: 19th -> nineteenth, $5 million -> 5 million dollars, 10% -> 10 percent."""
-    s = re.sub(r'\$\s?(\d[\d,]*(?:\.\d+)?)\s*(thousand|million|billion|trillion)?', lambda m: f"{m.group(1)} {m.group(2) or ''} dollars", s)
+    """Whisper's written forms back to words: 19th -> nineteenth, $5 million -> five million dollars, 10% -> 10 percent."""
+    s = re.sub(r'\$\s?(\d[\d,]*(?:\.\d+)?)\s*(thousand|million|billion|trillion)?', lambda m: money(m.group(1), m.group(2)), s)   # same words as num_words
+    s = re.sub(AMPM, lambda m: clock(*m.groups()), s)                                         # 10 p.m., 7.30pm
     s = re.sub(r'(\d+)(st|nd|rd|th)\b', lambda m: ordinal(int(m.group(1))), s)
     s = re.sub(r'\b\d+\.\d+\b', lambda m: num(m.group(0)), s)                                 # 3.5 -> three point five
     s = re.sub(r'\b(1[1-9]|20)(\d0)s\b', lambda m: (lambda w: w[0] + ' ' + plural(w[1]))(year(int(m.group(1) + m.group(2))).rsplit(' ', 1)), s)

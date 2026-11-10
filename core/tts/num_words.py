@@ -9,7 +9,7 @@ Pure Python, no packages, so any venv can import it.
   python3 core/tts/num_words.py "text"  (prints the spelled text)
 
 Years: a 4-digit 1100-2099 is read as a year (nineteen forty-seven, two thousand five, twenty twenty-two)
-unless a count noun follows ("2000 people" -> two thousand people). Also 1990s, '90s, 19th, 9:30, 1939-1945."""
+unless a count noun follows ("2000 people" -> two thousand people). Also 1990s, '90s, 19th, 9:30, 10pm, $1.50, 1939-1945."""
 import re, sys
 
 ONES = ('zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen '
@@ -55,19 +55,40 @@ def num(s):
     return card(int(s))
 
 
+def money(amount, scale=None):
+    """$1.50 -> one dollar and fifty cents, $0.99 -> ninety-nine cents, $5 -> five dollars, $3.5 million -> three point five million dollars."""
+    a = amount.replace(',', '')
+    if scale: return num(a) + ' ' + scale + ' dollars'
+    if '.' in a and len(a.split('.', 1)[1]) == 2:
+        d, c = (int(x or 0) for x in a.split('.', 1))
+        out = (card(d) + (' dollar' if d == 1 else ' dollars')) if d else ''
+        if c: out = (out + ' and ' if out else '') + card(c) + (' cent' if c == 1 else ' cents')
+        return out or 'zero dollars'
+    return num(a) + (' dollar' if a == '1' else ' dollars')
+
+
+AMPM = r'\b(\d{1,2})(?:[:.](\d{2}))?\s?([AaPp])\.?[Mm]\b\.?'      # 10pm, 10:00 p.m., 7.30pm
+
+
+def clock(h, mm=None, ap=None):
+    """9:30 -> nine thirty, 9:05 -> nine oh five, 10:00 -> ten o'clock, 10pm / 10:00 p.m. -> ten p.m."""
+    w = card(int(h))
+    if mm and mm != '00': w += (' oh ' if mm[0] == '0' else ' ') + card(int(mm))
+    elif not ap: w += " o'clock"
+    return w + (' ' + ap.lower() + '.m.' if ap else '')
+
+
 def spell(t):
     N = r'(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?'
     t = re.sub(r'\b(\d{4})\s?[-–—]\s?(\d{4})\b', r'\1 to \2', t)                       # 1939-1945
-    t = re.sub(r'\$\s?(' + N + r')(?:\s*(thousand|million|billion|trillion))?\b',
-               lambda m: num(m.group(1)) + (' ' + m.group(2) if m.group(2) else '') +
-               (' dollar' if m.group(1) == '1' and not m.group(2) else ' dollars'), t)
+    t = re.sub(r'\$\s?(' + N + r')(?:\s*(thousand|million|billion|trillion))?\b', lambda m: money(m.group(1), m.group(2)), t)
     t = re.sub(r'(' + N + r')\s?%', lambda m: num(m.group(1)) + ' percent', t)
     t = re.sub(r"'(\d)0s\b", lambda m: plural(TENS[int(m.group(1))]), t)                          # '90s
     t = re.sub(r'\b(1[1-9]|20)(\d0)s\b', lambda m: (lambda w: w.rsplit(' ', 1)[0] + ' ' + plural(w.rsplit(' ', 1)[1]))(
         year(int(m.group(1) + m.group(2)))), t)                                                     # 1990s
     t = re.sub(r'\b(\d+)(st|nd|rd|th)\b', lambda m: ordinal(int(m.group(1))), t)                 # 19th
-    t = re.sub(r'\b(\d{1,2}):(\d{2})\b', lambda m: card(int(m.group(1))) + (
-        " o'clock" if m.group(2) == '00' else (' oh ' if m.group(2)[0] == '0' else ' ') + card(int(m.group(2)))), t)
+    t = re.sub(AMPM, lambda m: clock(*m.groups()), t)                                            # 10pm
+    t = re.sub(r'\b(\d{1,2}):(\d{2})(?!\d)', lambda m: clock(m.group(1), m.group(2)), t)          # 9:30
 
     def plain(m):
         s = m.group(0); v = s.replace(',', '')
