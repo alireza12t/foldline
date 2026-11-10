@@ -35,6 +35,7 @@ SETUP = 'sh plugin/skills/lemo-opuscar/scripts/setup.sh deps qwen'
 def trim(x, sr=SR, thresh=0.01, head=0.010, tail=0.100):
     """Leading and trailing silence off: keep 10 ms before the first and 100 ms after the last sample above 1% of the peak."""
     import numpy as np
+    if len(x) == 0: return x
     a = np.abs(x); idx = np.where(a > (a.max() + 1e-9) * thresh)[0]
     if len(idx) == 0: return x
     return x[max(0, idx[0] - int(head * sr)):min(len(x), idx[-1] + int(tail * sr))]
