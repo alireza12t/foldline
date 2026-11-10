@@ -1,0 +1,6 @@
+# Qwen tier: core/tts/tts_qwen.py (Qwen3-TTS on MLX, local and free) and its Whisper check. macOS on Apple silicon only.
+# Install: sh plugin/skills/lemo-opuscar/scripts/setup.sh deps qwen   (the model, about 3.1 GB, downloads on first use)
+# qwen_batch.py uses mlx-audio's Qwen3-TTS internals, so the version is pinned; mlx-audio pins mlx itself.
+mlx-audio==0.6.4; sys_platform == "darwin" and platform_machine == "arm64"
+faster-whisper
+av<19   # av 19 dropped an option faster-whisper 1.2 passes when it opens a file (TypeError: metadata_errors)

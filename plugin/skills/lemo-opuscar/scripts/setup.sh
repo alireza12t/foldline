@@ -1,9 +1,10 @@
 #!/bin/sh
 # Lemo-Opuscar skill: find or install the style library, then print its path.
 #   sh setup.sh                    library ready? (clone on first run, update later) → prints LIB=<path>
-#   sh setup.sh deps [voice] [music]
+#   sh setup.sh deps [voice] [music] [qwen]
 #                                  install packages: core = Node packages, headless browser, Python core tier;
-#                                  voice = TTS and speech check (+ the English voice model); music = pluck.py (numba)
+#                                  voice = TTS and speech check (+ the English voice model); music = pluck.py (numba);
+#                                  qwen = Qwen3-TTS on MLX (Mac with Apple silicon; the model downloads on first use)
 #   sh setup.sh demo <slug>        add one style's demo source and poster to the library (reference only)
 # The library is a sparse clone of the main branch: guides, core/ tools and every STYLE.md. Big assets: tools/fetch.sh.
 # LEMO_OPUSCAR_HOME = where the library lives (default: the clone you stand in, else ~/lemo-opuscar).
@@ -59,7 +60,7 @@ find_py() {
 case "$1" in
   deps)
     shift; tiers=core
-    for t in "$@"; do case $t in voice|music) tiers="$tiers $t" ;; *) echo "usage: sh setup.sh deps [voice] [music]"; exit 1 ;; esac; done
+    for t in "$@"; do case $t in voice|music|qwen) tiers="$tiers $t" ;; *) echo "usage: sh setup.sh deps [voice] [music] [qwen]"; exit 1 ;; esac; done
     cd "$LIB"
     command -v npm >/dev/null || { echo "✗ npm not found: install Node 20+ first"; exit 1; }
     if ! node_ok; then
@@ -82,6 +83,7 @@ case "$1" in
       pysig "$(req "$t")" > ".venv/.lemo-$t"
     done
     case " $tiers " in *" voice "*) [ -f core/tts/kokoro-v1.0.onnx ] && [ -f core/tts/voices-v1.0.bin ] || sh tools/fetch.sh voice ;; esac
+    case " $tiers " in *" qwen "*) [ "$(uname -sm)" = "Darwin arm64" ] || echo "! the qwen tier needs a Mac with Apple silicon (MLX): only its Whisper check was installed" ;; esac
     ;;
   demo)
     [ -n "$2" ] && [ -f "$LIB/styles/$2/STYLE.md" ] || { echo "usage: sh setup.sh demo <slug>  (slugs: $LIB/styles/README.md)"; exit 1; }
