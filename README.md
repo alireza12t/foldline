@@ -340,7 +340,7 @@ Foldline's changes to lemo-opuscar are listed in [What's new vs lemo-opuscar](#w
 ## Licence
 
 - **Foldline's code**: [PolyForm Noncommercial 1.0.0](LICENSE), copyright Alireza Toghiani. Free to use, change and share for any non-commercial purpose. Commercial use needs a licence: [open an issue](https://github.com/alireza12t/foldline/issues/new?title=Commercial%20licence) with "Commercial licence" in the title.
-- **lemo-opuscar's original code**: [MIT](LICENSE-MIT), copyright LemoLab. [`NOTICE.md`](NOTICE.md) says which parts are which.
+- **lemo-opuscar's original code**: [MIT](licenses/lemo-opuscar-MIT.txt), copyright LemoLab. [`NOTICE.md`](NOTICE.md) says which parts are which.
 - Copies downloaded before November 7, 2026 were MIT and stay MIT.
 - **Demo films and their stills** from lemo-opuscar (in `styles/`): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Credit **LemoLab** with a link to [the lemo-opuscar repository](https://github.com/lemomo-ai/lemo-opuscar), and say if you changed them.
 - **Three voice tracks are not CC BY 4.0**: the shouts in Game Show Flat (macOS system voices, `say`), the narration in Paper-cut Lightbox (Microsoft Edge TTS), which will be re-voiced with Kokoro, and the narration in Broadcast News Package (Doubao TTS, under Volcengine's terms). They are excluded from the licence above. Don't reuse them; in your own films use Kokoro (the default) or a voice you have the right to use.

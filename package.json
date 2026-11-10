@@ -50,7 +50,7 @@
     "LEMO-README.md",
     "NOTICE.md",
     "LICENSE",
-    "LICENSE-MIT",
+    "licenses/",
     "llms.txt",
     "llms-full.txt",
     "requirements*.txt",

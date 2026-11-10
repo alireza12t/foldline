@@ -8,8 +8,8 @@ commercial licence from the author. To ask for one, open an issue on
 https://github.com/alireza12t/foldline with "Commercial licence" in the title.
 
 Foldline includes lemo-opuscar by LemoLab. LemoLab's original code is under
-the MIT licence in LICENSE-MIT, and stays that way. NOTICE.md says which parts
-are which.
+the MIT licence in licenses/lemo-opuscar-MIT.txt, and stays that way.
+NOTICE.md says which parts are which.
 
 Required Notice: Copyright (c) 2026 Alireza Toghiani (https://github.com/alireza12t/foldline)
 
