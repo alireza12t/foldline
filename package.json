@@ -1,6 +1,6 @@
 {
   "name": "foldline-mcp",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "mcpName": "io.github.alireza12t/foldline",
   "type": "module",
   "description": "Foldline: render HTML canvas animations to MP4 fast on a Mac (WebCodecs hardware H.264 in headless Chrome), with an MCP server for coding agents and 66 code-made film styles.",
