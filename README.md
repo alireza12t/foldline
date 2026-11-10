@@ -31,7 +31,7 @@ Foldline is a project by Alireza Toghiani, built for the Unfold channel. It isn'
 
 lemo's original README is kept as [`LEMO-README.md`](LEMO-README.md). It has the style list, how to make a style your own, and the full requirements.
 
-What Foldline adds is a faster video renderer, `core/render/video.mjs`, and an MCP server for coding agents, `core/mcp/server.mjs`.
+What Foldline adds is a faster video renderer, `core/render/video.mjs`, an MCP server for coding agents, `core/mcp/server.mjs`, and a local Qwen3-TTS voice engine, `core/tts/tts_qwen.py`.
 
 ## What's new vs lemo-opuscar
 
@@ -44,6 +44,7 @@ What Foldline adds is a faster video renderer, `core/render/video.mjs`, and an M
 - **The finished file is checked before it's saved**, not just for which streams it has: every rendered frame must decode (one frame of slack), the picture must run from 0 to the film's length, and the soundtrack must start with it and end with it (or before it, with `--allow-short-audio`). A file that ends early, after a missing chunk or a muxing mistake, fails the render and isn't saved.
 - **Output** is standard bt709 limited-range H.264 mp4.
 - **MCP server** in `core/mcp/`: agents get the styles, guides, renders and sound tools as MCP tools with short results. See [MCP server](#mcp-server).
+- **Qwen3-TTS voice** in `core/tts/tts_qwen.py`: a third voice engine beside Kokoro and edge-tts, local on Apple silicon, with fixes for cut endings and misread numbers and a Whisper check that redoes bad takes. See [Voice with Qwen3-TTS](#voice-with-qwen3-tts).
 
 Everything else in the library works the way lemo describes it.
 
@@ -87,6 +88,7 @@ For the Python tools (sound effects, mix, subtitles, voice), lemo's setup script
 | `sh plugin/skills/lemo-opuscar/scripts/setup.sh deps` | npm packages, headless browser, Python `.venv` core tier |
 | `sh plugin/skills/lemo-opuscar/scripts/setup.sh deps voice` | Kokoro, edge-tts, faster-whisper, and the Kokoro model |
 | `sh plugin/skills/lemo-opuscar/scripts/setup.sh deps music` | numba, for `pluck.py` |
+| `sh plugin/skills/lemo-opuscar/scripts/setup.sh deps qwen` | mlx-audio and faster-whisper for the [Qwen3-TTS voice](#voice-with-qwen3-tts) (Mac with Apple silicon; the model downloads on first use) |
 
 ### Optional big assets
 
@@ -165,6 +167,38 @@ window.READY = true;               // set once fonts and assets are loaded
 
 For the fast path, draw the whole film into one visible `<canvas id="c">` of the render size. Any other page still renders, through the screenshot path.
 
+### Voice with Qwen3-TTS
+
+Besides Kokoro and edge-tts, Foldline has a third voice engine: [Qwen3-TTS](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice), running on the Mac through [mlx-audio](https://github.com/Blaizzy/mlx-audio). It's free, it needs no account, and each line can say how it should sound. It needs a Mac with Apple silicon.
+
+Listen to [`examples/qwen-voice/demo.wav`](examples/qwen-voice/demo.wav): 15 s, two of the built-in voices, made from [`examples/qwen-voice/lines.json`](examples/qwen-voice/lines.json) with this command:
+
+```sh
+sh plugin/skills/lemo-opuscar/scripts/setup.sh deps qwen
+.venv/bin/python core/tts/tts_qwen.py examples/qwen-voice/lines.json out/voices
+```
+
+It writes one trimmed `<id>.wav` per line and `dur.json`, like `tts.py`. The first run downloads the model, `mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-8bit` (about 3.1 GB), and Whisper `small.en` for the check (about 0.5 GB). On an M1 Pro with 16 GB, the three demo lines took 21 s with the model already downloaded, and memory peaked at 4.2 GB.
+
+Each line is `{id, text}` plus any of these:
+
+| Field | Meaning |
+|---|---|
+| `voice` | `ryan` (default) or `aiden` for English; `vivian`, `serena`, `uncle_fu`, `dylan`, `eric` for Chinese; `ono_anna` for Japanese; `sohee` for Korean |
+| `instruct` | how to say it, in plain words, for example `"A warm, clear narrator, natural pace"` |
+| `lang` | `english` (default), `chinese`, `japanese`, `korean`, `german`, `french`, `russian`, `portuguese`, `spanish` or `italian` |
+| `say` | what is spoken, when it differs from `text` |
+| `asr` | what Whisper should hear, when it differs from what is spoken |
+
+`--voice` and `--instruct` set a default for every line. `--batch 16` is how many lines are made together (lower uses less memory), `--retries 3` how many rounds of redos, `--seed` fixes the randomness, and `--model` takes another Qwen3-TTS CustomVoice repo or a local folder. Agents get the same through the MCP server: `make_voice` with `engine: "qwen"`.
+
+**What it fixes.** The plain model has two problems, found and measured while making the voice for the Unfold channel:
+
+- **Takes that end mid-sound.** Qwen3-TTS often picks its end token on a frame where the last sound is still loud. It's more than 99% sure each time, so it isn't bad luck in sampling. Nothing comes after that frame, so the audio stops on a loud sample: a hard chop on the last word. This model did it in about 1 take in 4 (11 of 48 in one test). The fix: when a take first picks the end token, it has to make one more frame, which the model fills with silence, so the last sound finishes. In one test that took cut takes from 12 of 42 to 0. Every take also gets a 10 ms fade at the end.
+- **Numbers read wrong.** Qwen reads digits one token at a time and guesses the reading, so years come out rushed or as another number ("In 1947." came out as 1967). In a test of 8 takes of 3 lines, digits gave a wrong number in 3 of 24 takes and words in 0 of 24. So English digits are spelled as words first: 1947 becomes "nineteen forty-seven", and $5 million, 10%, 19th, 1990s, 9:30 and 1939-1945 work too. Keep the digits in your subtitles.
+
+**The guard.** Every take is checked for a cut end (voice still in the last 50 ms) and, in English, by Whisper on the CPU. A take fails when a number or the last word is missing, fewer than 85% of the words are heard, or a number is said too fast to follow (over 12.5 syllables a second; good takes reach 10.9). Failing takes are made again, up to 3 rounds. A line that still fails keeps its best try and is printed as `STILL FAILING`, so you know which one to listen to. The check costs about 1 s per take; `--no-check` keeps only the cut check. On seven hard test lines (years at the end, money, a Chinese line), one take was redone and none still failed.
+
 ### Using it with a coding agent
 
 lemo's plugin and skill are for Claude Code. How to install them, and how to ask for a film, is in [`LEMO-README.md`, How to use](LEMO-README.md#how-to-use). The plugin installs lemo's own library into `~/lemo-opuscar`. lemo's setup script uses the clone you're standing in when it's a library, so to work with Foldline's renderer, start your agent inside this folder (lemo's "clone the repo" option).
@@ -218,7 +252,7 @@ To use your own clone instead of npm, point the command at it: `node /path/to/fo
 | `render_video` | the full render; returns only the done line (path, frames, time, encoder) |
 | `check_reading` | on-screen text timing; returns only the failures |
 | `export_events` | the page's sound cues to JSON |
-| `make_voice`, `check_voice` | Kokoro or Edge TTS, then a Whisper check |
+| `make_voice`, `check_voice` | Kokoro, Edge TTS or Qwen3-TTS, then a Whisper check |
 | `mux_audio` | mix under the video, mastered to -14 LUFS |
 | `make_subtitles` | an `.srt` from cues |
 | `fetch_assets` | downloads the voice model, the HDRI skies for 3D styles, or an instrument library |
@@ -332,6 +366,7 @@ Not without a commercial licence. That covers selling Foldline or a service buil
 - **[three.js](https://threejs.org/)** for the 3D styles.
 - **[Poly Haven](https://polyhaven.com/)** for the CC0 HDRIs and models.
 - **[Kokoro TTS](https://huggingface.co/hexgrad/Kokoro-82M)** for offline narration.
+- **[Qwen3-TTS](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice)** by the Qwen team (Apache-2.0), run through **[mlx-audio](https://github.com/Blaizzy/mlx-audio)** (MIT), and **[faster-whisper](https://github.com/SYSTRAN/faster-whisper)** for the voice check.
 - **[Google Fonts](https://fonts.google.com/)** for fonts used in the demos.
 - Third-party assets in the demos keep their own licences (see each demo's `CREDITS`).
 

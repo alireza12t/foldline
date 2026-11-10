@@ -23,6 +23,7 @@ Everything else installs in tiers, from the library root (`$LIB` in skill mode).
 | `sh plugin/skills/lemo-opuscar/scripts/setup.sh deps` | core: npm packages, headless browser, Python `.venv` (numpy, scipy, soundfile, soxr, pillow): render, synthesize sound, mux | ~350 MB |
 | `… setup.sh deps voice` | Kokoro + model (English, offline), edge-tts (Chinese, online), faster-whisper (voice check) | ~0.55 GB + a Whisper model on first check (~145 MB for English, ~480 MB for Chinese) |
 | `… setup.sh deps music` | numba, for plucked strings (`pluck.py`); the sampler itself needs only the core | ~140 MB |
+| `… setup.sh deps qwen` | Qwen3-TTS on MLX (local, Mac with Apple silicon only) and its Whisper check | packages, plus the model on first use (~3.1 GB) and Whisper small.en (~0.5 GB) |
 | `sh tools/fetch.sh instruments <lib>` | a sample library: `freepats`, `karoryfer`, `salamander`, `vcsl`, `vsco2ce` or `all` | 70–400 MB each |
 | `sh tools/fetch.sh hdri` | HDRIs for 3D styles | 12 MB |
 
@@ -96,6 +97,7 @@ A small script (`cuecheck.py`, in `styles/<slug>/demo/tools/` of several demos) 
 
 - **TTS is only the default.** If the user brings a recording or names a voice, use that. Otherwise:
   - **English**: [Kokoro](https://github.com/thewh1teagle/kokoro-onnx), local, many voices (an unknown `voice` name makes `tts.py` print the full list; `af_` / `am_` are American, `bf_` / `bm_` British; cast the narrator for this film, not the demo's). `core/tts/tts.py lines.json out/` writes one WAV per line and a durations file. Its Chinese voices (`"lang": "cmn"`) work offline but sound plain.
+  - **Qwen3-TTS** (Mac with Apple silicon): `core/tts/tts_qwen.py lines.json out/` runs [Qwen3-TTS](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice) locally on MLX, with the same outputs as `tts.py`. Nine built-in voices (`ryan` and `aiden` for English) and an `instruct` per line that says how to read it ("warm, clear narrator, natural pace"). It spells digits as words, fixes the model's cut endings, and checks every take with Whisper, redoing the ones that fail. Run `asr_check.py` after it as usual, for `words.json`.
   - **Chinese**: `core/tts/tts_zh.py lines.json out/` uses [edge-tts](https://github.com/rany2/edge-tts) with Microsoft's neural voices (`zh-CN-XiaoxiaoNeural`, `zh-CN-YunxiNeural`…), with the same outputs as `tts.py`, a rate per line and the silence trimmed. **It needs a network connection.**
 - Spell numbers out in the TTS text and write them as digits in the subtitles.
 - **Check every line**: `core/tts/asr_check.py` transcribes each WAV with faster-whisper and compares it with the script (`--lang zh`: numbers by value, so 十九 matches 19, and the rest character by character); re-generate until it exits 0. A misheard character in a short Chinese line is normal: listen, and if it is right, put what the model heard in the line's `asr` field. It also writes word timestamps for placing lines and subtitles.
