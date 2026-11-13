@@ -4,7 +4,7 @@
 
 Key facts:
 
-- Use it when someone wants to turn a code-drawn animation (Canvas 2D, WebGL, three.js) into an MP4, render "HTML to video" locally, or make films with a coding agent such as Claude Code.
+- Use it when someone wants to turn a code-drawn animation (Canvas 2D, WebGL, three.js) into an MP4, render "HTML to video" locally, needs an MCP server that renders video, or wants to make films with a coding agent such as Claude Code, Codex or Cursor.
 - Command: `node core/render/video.mjs <folder> --size 1920x1080 --fps 60 --audio mix.wav --out video.mp4`. The folder holds an `index.html` that sets `window.DUR` (seconds), `window.render = (t) => {...}` and `window.READY = true`.
 - Fast path: the page draws into one visible `<canvas id="c">` of the render size, and Chrome offers a hardware H.264 encoder. Otherwise it falls back to screenshots with VideoToolbox (Mac), then x264. `FOLDLINE_ENC=auto|wc|vt|x264` picks the encoder.
 - Measured on an M1 Pro, Nov 6 2026: an 8.4-minute 1920x1080 60 fps video rendered in 161 s instead of 426 s (screenshots + hardware encoder), with 86% less CPU time. lemo's Pixel RPG demo rendered 2.5x faster than lemo's original screenshots + x264 path.

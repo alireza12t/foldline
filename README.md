@@ -3,7 +3,12 @@
 # Foldline
 
 **Render HTML canvas animations to MP4, fast, on a Mac.**<br>
-With the full lemo-opuscar library of 66 film styles made in code.
+With the full lemo-opuscar library of 66 film styles made in code,<br>
+and an MCP server so Claude Code, Codex, Cursor and VS Code can make films with it.
+
+<a href="https://www.npmjs.com/package/foldline-mcp"><img alt="npm foldline-mcp" src="https://img.shields.io/npm/v/foldline-mcp?label=npm%20foldline-mcp&color=CB3837"></a> <a href="https://registry.modelcontextprotocol.io/v0/servers?search=io.github.alireza12t/foldline"><img alt="MCP Registry" src="https://img.shields.io/badge/MCP%20Registry-io.github.alireza12t%2Ffoldline-0A7AFF"></a> <a href="#licence"><img alt="Licence: PolyForm Noncommercial" src="https://img.shields.io/badge/licence-PolyForm%20Noncommercial-555"></a> <a href="https://alireza12t.github.io/foldline/"><img alt="Website" src="https://img.shields.io/badge/website-alireza12t.github.io%2Ffoldline-13836E"></a>
+
+<a href="https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522foldline%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522-y%2522%252C%2522foldline-mcp%2522%255D%257D"><img alt="Install in VS Code" src="https://img.shields.io/badge/VS_Code-Install_Server-0098FF?logo=visualstudiocode&logoColor=white"></a> <a href="https://cursor.com/en/install-mcp?name=foldline&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImZvbGRsaW5lLW1jcCJdfQ%3D%3D"><img alt="Install in Cursor" src="https://cursor.com/deeplink/mcp-install-dark.svg" height="20"></a> <a href="#mcp-server"><img alt="Claude Code and Codex setup" src="https://img.shields.io/badge/Claude_Code_%C2%B7_Codex-setup-D97757"></a>
 
 Made for **Unfold**, an animated "What if" channel in a paper pop-up book style.<br>
 <a href="https://www.youtube.com/@UnfoldAnimated"><img alt="Watch Unfold on YouTube" src="https://img.shields.io/badge/YouTube-Unfold-FF0000?style=for-the-badge&logo=youtube&logoColor=white"></a>
@@ -20,7 +25,7 @@ https://github.com/user-attachments/assets/05724852-c9ae-4762-90a9-634315b2b016
 
 ## What it is
 
-Foldline turns a web page that draws a film in code into an H.264 MP4. You write an HTML page with a `<canvas>` and a `render(t)` function. Foldline opens it in headless Chrome, draws every frame, and encodes the video inside the page with WebCodecs on the Mac's hardware encoder, so frames never leave the GPU. On an M1 Pro, an 8.4-minute 1080p 60 fps video renders in 161 s instead of 426 s (see [Results](#results)). It's open source and free for non-commercial use, and it works well with coding agents like Claude Code.
+Foldline turns a web page that draws a film in code into an H.264 MP4. You write an HTML page with a `<canvas>` and a `render(t)` function. Foldline opens it in headless Chrome, draws every frame, and encodes the video inside the page with WebCodecs on the Mac's hardware encoder, so frames never leave the GPU. On an M1 Pro, an 8.4-minute 1080p 60 fps video renders in 161 s instead of 426 s (see [Results](#results)). It's open source and free for non-commercial use. Its [MCP server](#mcp-server) (`npx -y foldline-mcp`) lets coding agents like Claude Code, Codex and Cursor pick a style, render review stills and make the final video.
 
 Foldline is a project by Alireza Toghiani, built for the Unfold channel. It isn't a GitHub fork. It ships the full [lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) library by LemoLab:
 
@@ -346,6 +351,15 @@ Not to the eye. The old and new long video differ by 42.3 dB on average (lowest 
 
 **Can I add sound?**
 Yes. `--audio my-film/mix.wav` muxes the file in as AAC 192k. A shorter mix is padded with silence, never used to cut the picture; pass `--allow-short-audio` if it's meant to end early. Before saving, the renderer decodes the result and refuses it if it's missing a stream, has fewer frames than were rendered, or its sound doesn't line up with the start and end of the film.
+
+**Is there an MCP server that renders HTML to MP4?**
+Yes, Foldline's. Add it with `npx -y foldline-mcp` (on npm as [`foldline-mcp`](https://www.npmjs.com/package/foldline-mcp), in the MCP Registry as `io.github.alireza12t/foldline`). It gives the agent 12 tools: search the 66 styles, read the guides one section at a time, render stills and the full MP4, check on-screen text timing, make a voiceover and mix the sound. It runs on your Mac and needs no API key. Setup for each client is in [MCP server](#mcp-server).
+
+**How do I make an animated video with Claude Code?**
+Add the [MCP server](#mcp-server) or the Claude Code plugin, then ask for a film in plain words, for example "make a 30-second vertical explainer about black holes in a paper cut-out style". The agent picks a style with `find_styles`, writes the HTML page, checks frames with `render_stills` and renders it with `render_video`. Every frame is drawn in code, with no video model.
+
+**How is it different from Remotion?**
+Remotion is a React framework: you write components, and FFmpeg encodes the frames. Foldline is a renderer plus a style library: you write a plain HTML page with a `render(t)` function, and the canvas is encoded inside Chrome on the Mac's hardware encoder. It also ships 66 ready-made film styles and an MCP server for agents. The licences differ too. The full table is in [How it compares](#how-it-compares).
 
 **What is lemo-opuscar?**
 [lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) is LemoLab's open library of film styles made in code, for Claude Code. Each of the 66 styles has a style prompt and a demo film drawn entirely in code, with no video model. Foldline includes all of it. Foldline changed the video renderer and added an MCP server (see [`NOTICE.md`](NOTICE.md)).

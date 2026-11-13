@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Foldline's GitHub Pages landing page (served from docs/). Keep its facts in line with README.md.
      After changing llms.txt or llms-full.txt at the repo root, run: sh tools/sync-pages.sh -->
-<title>Foldline: render HTML canvas animations to MP4 fast on a Mac</title>
-<meta name="description" content="Foldline renders HTML canvas animations to H.264 MP4 inside headless Chrome with WebCodecs on the Mac's hardware encoder. An 8.4-minute 1080p 60 fps video renders in 161 s instead of 426 s. Open source and free for non-commercial use, with LemoLab's 66 lemo-opuscar film styles.">
+<title>Foldline: render HTML canvas animations to MP4 fast on a Mac, with an MCP server</title>
+<meta name="description" content="Foldline renders HTML canvas animations to H.264 MP4 fast on a Mac, with WebCodecs hardware encoding in headless Chrome. An MCP server (npx -y foldline-mcp) lets Claude Code, Codex and Cursor make films with 66 code-made styles. Free for non-commercial use.">
 <link rel="canonical" href="https://alireza12t.github.io/foldline/">
 <link rel="alternate" type="text/markdown" href="https://alireza12t.github.io/foldline/index.md">
 <link rel="describedby" href="https://alireza12t.github.io/foldline/llms.txt">
@@ -38,10 +38,12 @@
   "programmingLanguage": "JavaScript",
   "runtimePlatform": ["Node.js 20+", "Chromium headless shell", "macOS"],
   "license": "https://polyformproject.org/licenses/noncommercial/1.0.0",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "datePublished": "2026-11-06",
+  "dateModified": "2026-11-10",
   "image": "https://alireza12t.github.io/foldline/foldline/social-preview.png",
-  "keywords": "html to video, canvas to mp4, webcodecs, h264, hardware encoding, headless chrome, programmatic video, video rendering, macos, apple silicon, claude code",
+  "keywords": "html to video, canvas to mp4, mcp server, model context protocol, video mcp, webcodecs, h264, hardware encoding, headless chrome, programmatic video, video rendering, macos, apple silicon, claude code, codex, cursor",
+  "sameAs": ["https://www.npmjs.com/package/foldline-mcp", "https://github.com/alireza12t/foldline"],
   "author": { "@type": "Person", "name": "Alireza Toghiani", "url": "https://github.com/alireza12t" },
   "isBasedOn": { "@type": "SoftwareSourceCode", "name": "lemo-opuscar", "codeRepository": "https://github.com/lemomo-ai/lemo-opuscar", "author": { "@type": "Organization", "name": "LemoLab" } }
 }
@@ -70,6 +72,8 @@
     { "@type": "Question", "name": "Is it faster than screenshots + ffmpeg?", "acceptedAnswer": { "@type": "Answer", "text": "In our tests, yes. An 8.4-minute 1920x1080 60 fps video took 426 s with screenshots and the Mac's hardware encoder, and 161 s with Foldline, with 86% less CPU time. lemo's Pixel RPG demo rendered 2.5x faster than lemo's original screenshots + x264 path." } },
     { "@type": "Question", "name": "Does it work on Windows or Linux?", "acceptedAnswer": { "@type": "Answer", "text": "It's built and tested on a Mac with Apple Silicon. The fast path needs Chrome's hardware H.264 encoder. When Chrome doesn't offer one, Foldline falls back to the screenshot path, and on systems without VideoToolbox that means x264. It still renders, just not faster. Windows and Linux haven't been tested." } },
     { "@type": "Question", "name": "Does my page have to be a single canvas?", "acceptedAnswer": { "@type": "Answer", "text": "For the fast path, yes: one visible canvas with id c of the render size, and nothing else visible. Any other page still renders, through the screenshot path." } },
+    { "@type": "Question", "name": "Is there an MCP server that renders HTML to MP4?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, Foldline's. Add it with npx -y foldline-mcp. It's on npm as foldline-mcp and in the MCP Registry as io.github.alireza12t/foldline, and works with Claude Code, Codex, Cursor and VS Code. It gives the agent 12 tools: search the 66 styles, read the guides one section at a time, render stills and the full MP4, check on-screen text timing, make a voiceover and mix the sound. It runs on your Mac and needs no API key." } },
+    { "@type": "Question", "name": "How is it different from Remotion?", "acceptedAnswer": { "@type": "Answer", "text": "Remotion is a React framework: you write components, and FFmpeg encodes the frames. Foldline is a renderer plus a style library: you write a plain HTML page with a render(t) function, and the canvas is encoded inside Chrome on the Mac's hardware encoder. It also ships 66 ready-made film styles and an MCP server for agents." } },
     { "@type": "Question", "name": "What is lemo-opuscar?", "acceptedAnswer": { "@type": "Answer", "text": "lemo-opuscar is LemoLab's open library of film styles made in code, for Claude Code. Each of the 66 styles has a style prompt and a demo film drawn entirely in code. Foldline includes all of it; only the video renderer changed." } },
     { "@type": "Question", "name": "Is it free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, for any non-commercial use. The code is public, and you can change and share it. Making money with it needs a commercial licence from the author. It needs only free tools: Node, ffmpeg and Chrome's headless shell." } }
   ]
@@ -104,7 +108,7 @@ footer{margin-top:56px;color:var(--muted);font-size:15px}
 <body>
 <main>
 <h1>Foldline</h1>
-<p class="lead">Render HTML canvas animations to MP4, fast, on a Mac. With the full lemo-opuscar library of 66 film styles made in code.</p>
+<p class="lead">Render HTML canvas animations to MP4, fast, on a Mac. With the full lemo-opuscar library of 66 film styles made in code, and an MCP server for coding agents.</p>
 <div class="btns">
   <a class="btn" href="https://github.com/alireza12t/foldline">Get it on GitHub</a>
   <a class="btn alt" href="https://github.com/alireza12t/foldline#readme">Read the docs</a>
@@ -129,6 +133,20 @@ window.render = (t) =&gt; { ... };    // draw the frame at t seconds
 window.READY = true;               // set once fonts and assets are loaded</code></pre>
 <p class="small">For the fast path, draw into one visible <code>&lt;canvas id="c"&gt;</code> of the render size. Needs Node 20+, ffmpeg 7+ and a Mac with Apple Silicon for the fast path.</p>
 
+<h2>MCP server for Claude Code, Codex and Cursor</h2>
+<p>Foldline's MCP server lets a coding agent make the whole film: pick one of the 66 styles, read the directing guide one section at a time, write the page, check stills, render the MP4, add a voiceover and mix the sound. Results are short, to save tokens. It's on npm as <a href="https://www.npmjs.com/package/foldline-mcp"><code>foldline-mcp</code></a> and in the <a href="https://registry.modelcontextprotocol.io/v0/servers?search=io.github.alireza12t/foldline">MCP Registry</a> as <code>io.github.alireza12t/foldline</code>.</p>
+<pre><code># Claude Code
+claude mcp add --scope user foldline -- npx -y foldline-mcp
+
+# Cursor, Claude Desktop and most other clients
+{ "mcpServers": { "foldline": { "command": "npx", "args": ["-y", "foldline-mcp"] } } }</code></pre>
+<div class="btns">
+  <a class="btn" href="https://cursor.com/en/install-mcp?name=foldline&amp;config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImZvbGRsaW5lLW1jcCJdfQ%3D%3D">Install in Cursor</a>
+  <a class="btn" href="https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522foldline%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522-y%2522%252C%2522foldline-mcp%2522%255D%257D">Install in VS Code</a>
+  <a class="btn alt" href="https://github.com/alireza12t/foldline#mcp-server">Codex and other clients</a>
+</div>
+<p class="small">The server needs Node 20+, ffmpeg and Chrome's headless shell (<code>npx playwright-core@1.63.0 install chromium-headless-shell</code>), and tells you if one is missing.</p>
+
 <h2>Results</h2>
 <p class="small">Measured on an M1 Pro with 16 GB, nothing else running, Nov 6 2026.</p>
 <div class="tbl"><table>
@@ -150,6 +168,10 @@ window.READY = true;               // set once fonts and assets are loaded</code
 <p>For the fast path, yes. Any other page (DOM elements, SVG, several canvases) still renders, through the screenshot path. 35 of the 66 lemo demos fit the fast path.</p>
 <h3>Can I add sound?</h3>
 <p>Yes. <code>--audio mix.wav</code> muxes the file in as AAC 192k. A shorter mix is padded with silence, never used to cut the picture; pass <code>--allow-short-audio</code> if it's meant to end early. Before saving, the renderer decodes the result and refuses it if it's missing a stream, has fewer frames than were rendered, or its sound doesn't line up with the start and end of the film.</p>
+<h3>Is there an MCP server that renders HTML to MP4?</h3>
+<p>Yes, Foldline's. Add it with <code>npx -y foldline-mcp</code>. It works with Claude Code, Codex, Cursor and VS Code, gives the agent 12 tools for styles, guides, stills, renders, voice and sound, runs on your Mac and needs no API key.</p>
+<h3>How is it different from Remotion?</h3>
+<p>Remotion is a React framework: you write components, and FFmpeg encodes the frames. Foldline is a renderer plus a style library: you write a plain HTML page with a <code>render(t)</code> function, and the canvas is encoded inside Chrome on the Mac's hardware encoder. It also ships 66 ready-made film styles and an MCP server. The <a href="https://github.com/alireza12t/foldline#how-it-compares">full comparison</a> covers Motion Canvas and HyperFrames too.</p>
 <h3>What is lemo-opuscar?</h3>
 <p><a href="https://github.com/lemomo-ai/lemo-opuscar">lemo-opuscar</a> is LemoLab's open library of film styles made in code, for Claude Code. Each of the 66 styles has a style prompt and a demo film drawn entirely in code. Foldline includes all of it. Only the video renderer changed.</p>
 <h3>Is it free?</h3>
