@@ -103,6 +103,8 @@ table{border-collapse:collapse;width:100%;font-size:15px}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 .small{color:var(--muted);font-size:15px}
 footer{margin-top:56px;color:var(--muted);font-size:15px}
+.stats{margin:-14px 0 24px;color:var(--muted);font-size:15px}
+.stats b{color:var(--fg)}
 </style>
 </head>
 <body>
@@ -114,6 +116,7 @@ footer{margin-top:56px;color:var(--muted);font-size:15px}
   <a class="btn alt" href="https://github.com/alireza12t/foldline#readme">Read the docs</a>
   <a class="btn alt" href="https://www.youtube.com/@UnfoldAnimated">Watch Unfold</a>
 </div>
+<p class="stats" id="stats" hidden></p>
 <a href="https://youtu.be/VWgjNfQqT7k"><img src="foldline/demo-poster.jpg" width="1280" height="720" alt="Watch the Foldline explainer. Poster: 2.6x faster. Before 7.1 min, Foldline 2.7 min, on the GPU encoder."></a>
 <p class="small"><b><a href="https://youtu.be/VWgjNfQqT7k">Watch the 96-second explainer on YouTube</a></b> (or <a href="https://github.com/alireza12t/foldline/releases/download/v1.0.0/foldline-explainer.mp4">download the MP4</a>). <a href="https://medium.com/@devmvrick/part-2-i-made-my-code-drawn-videos-render-up-to-2-6x-faster-on-a-mac-free-open-source-3500fed32b95">Read the deep dive on Medium</a>. Made with Foldline itself: every frame drawn in code, a local text-to-speech voice, music synthesised in code. It renders in 34 s. <a href="https://github.com/alireza12t/foldline/tree/main/examples/foldline-explainer">Source</a>.</p>
 
@@ -181,6 +184,48 @@ claude mcp add --scope user foldline -- npx -y foldline-mcp
 <p>Foldline is made by Alireza Toghiani for <a href="https://www.youtube.com/@UnfoldAnimated">Unfold</a>, an animated "What if" YouTube channel. It's built on <a href="https://github.com/lemomo-ai/lemo-opuscar">lemo-opuscar</a> by LemoLab: the styles, toolkit, guides, page contract and render pipeline are theirs. Foldline's code: PolyForm Noncommercial. lemo's original code: MIT. Demo films and stills CC BY 4.0, credit LemoLab.</p>
 <p>For AI assistants: <a href="llms.txt">llms.txt</a> · <a href="llms-full.txt">llms-full.txt</a> · <a href="index.md">this page as Markdown</a></p>
 </footer>
+</main>
+<script>
+// Numbers under the buttons: downloads (npm + GitHub release files), clones, stars
+// and forks. Stars, forks and downloads come live from GitHub's and npm's public
+// APIs. Clones aren't public, so tools/stats.mjs saves their running total to
+// stats.json next to this page. No cookies. A count of 0 is left out, and the
+// line stays hidden if nothing loads.
+(function () {
+  var line = document.getElementById('stats');
+  var gh = 'https://api.github.com/repos/alireza12t/foldline';
+  var today = new Date().toISOString().slice(0, 10);
+  var json = function (url) {
+    return fetch(url).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .catch(function () { return null; });
+  };
+  Promise.all([
+    json(gh),
+    json(gh + '/releases?per_page=100'),
+    json('https://api.npmjs.org/downloads/point/2026-11-01:' + today + '/foldline-mcp'),
+    json('stats.json')
+  ]).then(function (r) {
+    var repo = r[0], releases = r[1], npm = r[2], saved = r[3];
+    var downloads = npm ? npm.downloads : 0;
+    (releases || []).forEach(function (rel) {
+      rel.assets.forEach(function (a) { downloads += a.download_count; });
+    });
+    var parts = [
+      [downloads, 'download', 'downloads'],
+      [saved ? saved.clones : 0, 'clone', 'clones'],
+      [repo ? repo.stargazers_count : 0, 'star', 'stars'],
+      [repo ? repo.forks_count : 0, 'fork', 'forks']
+    ].filter(function (p) { return p[0] > 0; });
+    parts.forEach(function (p, i) {
+      if (i) line.append(' · ');
+      var b = document.createElement('b');
+      b.textContent = p[0].toLocaleString('en-US');
+      line.append(b, ' ' + (p[0] === 1 ? p[1] : p[2]));
+    });
+    if (parts.length) line.hidden = false;
+  });
+})();
+</script>
 </main>
 </body>
 </html>

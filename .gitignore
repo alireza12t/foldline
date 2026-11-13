@@ -153,3 +153,5 @@ examples/*/out/
 examples/*/voices/*.wav
 examples/*/voices/cand/
 examples/*/audio/
+# Clone history for tools/stats.mjs (repo traffic is not public; only the total goes to docs/stats.json)
+stats/

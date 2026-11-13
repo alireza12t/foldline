@@ -68,3 +68,7 @@ After a release on `main` (new styles, changed guides or tools):
 1. `git worktree add ../lemo-opuscar-directory directory` (once; reuse it afterwards).
 2. `python3 tools/directory.py <version> --into ../lemo-opuscar-directory`, with a version above the branch's current `.claude-plugin/plugin.json` (new styles or features: 1.1.0; fixes only: 1.0.1). The directory treats each version number as a release, so the script refuses the same or a lower one; `--same-version` is only for fixing a version that was never published. It also stops when a guide changed so much that one of its edits no longer applies: update `EDITS` in the script.
 3. `claude plugin validate ../lemo-opuscar-directory`, then commit there (`Lemo-Opuscar <version>, plugin directory edition`) and push `directory`. The directory scans each push and publishes the new version.
+
+## Site stats line
+
+The Pages site shows downloads (npm + GitHub release files), clones, stars and forks under the buttons. Stars, forks and downloads load live. Clones aren't public, so run `node tools/stats.mjs` at least every two weeks (GitHub keeps 14 days of clone counts), then commit and push `docs/stats.json`. The per-day history stays in `stats/`, which isn't in git.
