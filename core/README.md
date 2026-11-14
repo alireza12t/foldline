@@ -40,6 +40,7 @@ The viewport is 1920×1080 at device scale 1, or `--size WxH`. `--q 'k=v&…'` r
 | `.venv/bin/python core/render/sheet.py out.jpg img… [--cols 4] [--w 480]` | contact sheet |
 | `.venv/bin/python core/render/srt.py cues.json out.srt` | subtitles from `[{t0, t1, text}]` |
 | `sh core/render/mux.sh video.mp4 mix.wav out.mp4 [fps=24] [grain=2]` | mux and master (below) |
+| `node core/render/threert.mjs <film> [--quality fast\|full] [--plates] [--force] [--from s] [--to s]` | ThreeRT pass: path-traced 3D frames or still plates, rendered natively (no Chrome), for the page to draw under its 2D layers (below) |
 
 All four page tools take `--size WxH` (default `1920x1080`, even numbers) and `--q 'k=v'`.
 
@@ -48,6 +49,22 @@ All four page tools take `--size WxH` (default `1920x1080`, even numbers) and `-
 **mux** runs a two-pass `loudnorm` to −14 LUFS / true peak −1.2 dB, adds film grain (`grain` 0 = none) and prints the measured loudness. Silent audio is left at its level with a warning; short audio is padded, long audio cut at the picture's end; missing, damaged or truncated audio is refused. It never leaves a partial file, and it checks the written film the same way as the renderer (below).
 
 **The finished-file check** (`output.mjs`, run by `video.mjs` and `mux.sh` before they hand a file over) doesn't stop at which streams exist. A file can hold a video and an audio stream and still end early. So it decodes the picture and counts its frames against what was rendered (one frame of slack), checks that the picture runs from 0 to the film's length, and that the soundtrack starts with the picture and ends with it. A soundtrack is never allowed to cut the picture (no `-shortest`): one that's shorter is padded with silence, unless `video.mjs` got `--allow-short-audio` (MCP: `allow_short_audio`), which lets it end early but never late. A file that fails isn't saved. Decoding takes about 2 s per minute of 1080p. Tests: `npm test`.
+
+## ThreeRT pass (path-traced 3D)
+
+[ThreeRT](https://github.com/meshy-dev/ThreeRT) (MIT) path traces a three.js-style scene on the GPU's ray tracing hardware: real soft shadows, bounce light, glass, glowing objects that light the room. It runs natively, outside Chrome; the page only draws its frames.
+
+- `<film>/threert/scene.ts`: a scene written with `@threert/scene` (default export `() => ({ scene, camera })`). Lights are physical: emissive in nits, sun in lux.
+- `<film>/threert/shot.mjs`: `export default { fps, dur, camera: t => ({ position, target, fov }), plates: { name: { camera, time } } }`.
+- `node core/render/threert.mjs <film>` writes `threert/frames/f00000.png …` and `manifest.json`; `--plates` writes `threert/plates/<name>.png` (one still per set, e.g. storybook backgrounds). Unchanged frames are skipped. It takes `$TMPDIR/unfold-chrome.lock` and runs at `nice -n 20`.
+- In the page: `const rt = await loadThreeRT('threert/')`, then `await rt.draw(ctx, t)` first in `render(t)` and the 2D layers after it.
+
+| `--quality` | Settings | M1 Pro, a 1080×1920 frame |
+|---|---|---|
+| `fast` (default) | preview preset, 8 samples, 720×1280 scaled up by the page | ≈ 0.7 s, 0.37 GB |
+| `full` | cinematic preset, 16 samples, 1080×1920 | ≈ 3.1 s, 0.7 GB |
+
+Build once: `git clone https://github.com/meshy-dev/ThreeRT ~/threert-build && cd ~/threert-build && npm install --ignore-scripts && cd renderer && nice -n 20 cargo build --release -j 4` (Rust via Homebrew; tested at commit a6d4fcc). Example film: Unfold's `research/threert/foldline-demo/`.
 
 ## Audio
 
@@ -66,6 +83,7 @@ All four page tools take `--size WxH` (default `1920x1080`, even numbers) and `-
 |---|---|
 | `core/lib.js` | seeded random `mulberry`, `hash`, `vnoise`, `clamp(x,a,b)`, `lerp(a,b,t)`, `seg(t,a,b)` (0→1 between a and b), easing on 0–1 (`ss(t)`, `eio(t)`, `eo(t)`, `ei(t)`, `back(t,s)`, `spring(t,k,z)`), `monotone`/`track` interpolation, envelope `env` |
 | `core/three/post.js` | three.js post: physical depth of field, GTAO, bloom, colour grade, 2× supersampling |
+| `core/threert.js` | `loadThreeRT('threert/')` → `draw(ctx, t)` / `plate(ctx, name)`: draws the ThreeRT pass's frame for `t` (or a plate) to cover the canvas |
 | `core/post/crt.js` | WebGL2 CRT / VHS pass over a 2D canvas |
 | `core/fonts/` | Fredoka, Lilita One, IM Fell English, ZCOOL KuaiLe (OFL, [`fonts/OFL.md`](fonts/OFL.md)) as subsets; ZCOOL holds only ≈ 200 characters |
 | `core/assets/polyhaven/` | CC0 HDRIs and models (`SOURCES.md`) |
@@ -81,6 +99,7 @@ All four page tools take `--size WxH` (default `1920x1080`, even numbers) and `-
 | `LEMO_COLOR=bt709` | `mux.sh` writes limited-range BT.709 instead of the default full-range output |
 | `WHISPER_MODEL` | Whisper model name or local folder for `asr_check.py` (same as `--model`; default `base.en` for English, `small` for Chinese, `base` otherwise) |
 | `HF_ENDPOINT` | Hugging Face mirror for the Whisper download |
+| `THREERT_HOME` | ThreeRT checkout with a built `renderer/target/release/threert-render` (default `~/threert-build`) |
 
 ## Exit codes
 
