@@ -11,7 +11,7 @@ and an MCP server so Claude Code, Codex, Cursor and VS Code can make films with 
 <a href="https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522foldline%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522-y%2522%252C%2522foldline-mcp%2522%255D%257D"><img alt="Install in VS Code" src="https://img.shields.io/badge/VS_Code-Install_Server-0098FF?logo=visualstudiocode&logoColor=white"></a> <a href="https://cursor.com/en/install-mcp?name=foldline&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImZvbGRsaW5lLW1jcCJdfQ%3D%3D"><img alt="Install in Cursor" src="https://cursor.com/deeplink/mcp-install-dark.svg" height="20"></a> <a href="#mcp-server"><img alt="Claude Code and Codex setup" src="https://img.shields.io/badge/Claude_Code_%C2%B7_Codex-setup-D97757"></a>
 
 Made for **Unfold**, an animated "What if" channel in a paper pop-up book style.<br>
-<a href="https://www.youtube.com/@UnfoldAnimated"><img alt="Watch Unfold on YouTube" src="https://img.shields.io/badge/YouTube-Unfold-FF0000?style=for-the-badge&logo=youtube&logoColor=white"></a> <a href="https://www.youtube.com/@UnfoldAnimated"><img alt="Unfold, built in public" src="https://img.shields.io/badge/Built%20in%20public-live%20numbers-FFC42E?style=for-the-badge&labelColor=14181F"></a>
+<a href="https://www.youtube.com/@UnfoldAnimated"><img alt="Watch Unfold on YouTube" src="https://img.shields.io/badge/YouTube-Unfold-FF0000?style=for-the-badge&logo=youtube&logoColor=white"></a> <a href="https://alireza12t.github.io/unfold-animated/progress/"><img alt="Unfold, built in public" src="https://img.shields.io/badge/Built%20in%20public-live%20numbers-FFC42E?style=for-the-badge&labelColor=14181F"></a>
 
 </div>
 
@@ -25,8 +25,7 @@ https://github.com/user-attachments/assets/05724852-c9ae-4762-90a9-634315b2b016
 
 ## Built in public: Unfold
 
-<!-- BUILD IN PUBLIC: point these links at the progress page once it is live -->
-<a href="https://www.youtube.com/@UnfoldAnimated"><img alt="Unfold, built in public" src="https://img.shields.io/badge/BUILT%20IN%20PUBLIC-watch%20Unfold%20%E2%86%92-FFC42E?style=for-the-badge&labelColor=14181F"></a>
+<a href="https://alireza12t.github.io/unfold-animated/progress/"><img alt="Unfold, built in public" src="https://img.shields.io/badge/BUILT%20IN%20PUBLIC-see%20the%20progress%20%E2%86%92-FFC42E?style=for-the-badge&labelColor=14181F"></a>
 
 **Unfold, built in public: every number, good or bad. Drawn in code, rendered with Foldline.**
 
