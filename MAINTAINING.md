@@ -71,4 +71,4 @@ After a release on `main` (new styles, changed guides or tools):
 
 ## Site stats line
 
-The Pages site shows downloads (npm + GitHub release files), clones, stars and forks under the buttons. Stars, forks and downloads load live. Clones aren't public, so run `node tools/stats.mjs` at least every two weeks (GitHub keeps 14 days of clone counts), then commit and push `docs/stats.json`. The per-day history stays in `stats/`, which isn't in git.
+The Pages site shows downloads (npm + GitHub release files), clones, stars and forks under the buttons. Stars, forks and downloads load live. Clones aren't public, so run `node tools/stats.mjs` at least every two weeks (GitHub keeps 14 days of clone counts), then commit and push `docs/stats.json`. The per-day history stays in `~/.foldline/clones-history.json` on the maintainer's Mac, outside the repo, so a clone can be deleted without losing it.
