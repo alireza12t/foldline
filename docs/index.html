@@ -152,15 +152,26 @@ window.READY = true;               // set once fonts and assets are loaded</code
 
 <h2>MCP server for Claude Code, Codex and Cursor</h2>
 <p>Foldline's MCP server lets a coding agent make the whole film: pick one of the 66 styles, read the directing guide one section at a time, write the page, check stills, render the MP4, add a voiceover and mix the sound. Results are short, to save tokens. It's on npm as <a href="https://www.npmjs.com/package/foldline-mcp"><code>foldline-mcp</code></a> and in the <a href="https://registry.modelcontextprotocol.io/v0/servers?search=io.github.alireza12t/foldline">MCP Registry</a> as <code>io.github.alireza12t/foldline</code>.</p>
-<pre><code># Claude Code
+<pre><code># Claude Code, as a plugin (MCP server plus a Foldline skill)
+claude plugin install foldline --marketplace alireza12t/foldline
+
+# Claude Code, plain MCP server
 claude mcp add --scope user foldline -- npx -y foldline-mcp
+
+# Codex
+codex mcp add foldline -- npx -y foldline-mcp
+
+# Codex, or add this to ~/.codex/config.toml
+[mcp_servers.foldline]
+command = "npx"
+args = ["-y", "foldline-mcp"]
 
 # Cursor, Claude Desktop and most other clients
 { "mcpServers": { "foldline": { "command": "npx", "args": ["-y", "foldline-mcp"] } } }</code></pre>
 <div class="btns">
   <a class="btn" href="https://cursor.com/en/install-mcp?name=foldline&amp;config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImZvbGRsaW5lLW1jcCJdfQ%3D%3D">Install in Cursor</a>
   <a class="btn" href="https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522foldline%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522-y%2522%252C%2522foldline-mcp%2522%255D%257D">Install in VS Code</a>
-  <a class="btn alt" href="https://github.com/alireza12t/foldline#mcp-server">Codex and other clients</a>
+  <a class="btn alt" href="https://github.com/alireza12t/foldline#mcp-server">All setup steps</a>
 </div>
 <p class="small">The server needs Node 20+, ffmpeg and Chrome's headless shell (<code>npx playwright-core@1.63.0 install chromium-headless-shell</code>), and tells you if one is missing.</p>
 

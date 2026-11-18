@@ -237,7 +237,13 @@ or as a plain MCP server:
 claude mcp add --scope user foldline -- npx -y foldline-mcp
 ```
 
-**Codex**, in `~/.codex/config.toml`:
+**Codex**:
+
+```sh
+codex mcp add foldline -- npx -y foldline-mcp
+```
+
+or in `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.foldline]
